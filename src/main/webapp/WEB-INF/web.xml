@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+
+   <servlet>
+       <servlet-name>genres</servlet-name>
+       <servlet-class>servlets.GenreServlet</servlet-class>
+   </servlet>
+
+    <servlet>
+        <servlet-name>bands</servlet-name>
+        <servlet-class>servlets.BandServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>albums</servlet-name>
+        <servlet-class>servlets.AlbumServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>songs</servlet-name>
+        <servlet-class>servlets.SongServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>bands</servlet-name>
+        <url-pattern>/bands</url-pattern>
+    </servlet-mapping>
+
+   <servlet-mapping>
+       <servlet-name>genres</servlet-name>
+       <url-pattern>/genres</url-pattern>
+   </servlet-mapping>
+
+    <servlet-mapping>
+    <servlet-name>albums</servlet-name>
+    <url-pattern>/albums</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>songs</servlet-name>
+        <url-pattern>/songs</url-pattern>
+    </servlet-mapping>
+   
+   
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    
+</web-app>
