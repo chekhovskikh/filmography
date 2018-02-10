@@ -429,7 +429,7 @@ div.site-title {
     font-size: 50px;
     text-align: center;
     text-transform: uppercase;
-    width: 250px;
+    width: 500px;
     color:  #402a55;
     padding-bottom: 20px;
 }
@@ -565,7 +565,7 @@ body.loaded div.loader {
 
 
 div.btn-circle {
-    width: 250px;
+    width: 500px;
     padding-top: 20px;
     text-align: center;
     font-size: 30px;
@@ -576,7 +576,7 @@ div.btn-circle {
 
 div.btn-circle > span {
     position: absolute;
-    margin-left: 150px;
+    margin-left: 230px;
     margin-top: -50px;
     display: block;
     width: 0;
@@ -593,8 +593,8 @@ div.btn-circle:hover {
 }
 
 div.btn-circle:hover > span {
-    width: 622.5px;
-    height: 622.5px;
+    width: 650px;
+    height: 650px;
 }
 
 div.btn-circle:active > span {

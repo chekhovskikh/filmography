@@ -104,7 +104,7 @@ public class GenreDao implements EntityDao<Genre> {
         genres.clear();
         ResultSet set;
         set = statement.executeQuery("SELECT * FROM genre " +
-                "FULL JOIN genre parent ON parent.genre_id = genre.parent_id WHERE " +
+                "LEFT OUTER JOIN genre parent ON parent.genre_id = genre.parent_id WHERE " +
                 regexpLike("genre.genre_name", filter.getName()) + " AND " +
                 regexpLike("parent.genre_name", filter.getParentName()));
         while (set.next())
@@ -115,6 +115,6 @@ public class GenreDao implements EntityDao<Genre> {
     }
 
     private String regexpLike(String attribute, String value){
-        return "REGEXP_LIKE(" + attribute + ", '(^| |-)+" + value + "\\w*','i')";
+        return "UPPER(" + attribute + ") LIKE UPPER('%" + value + "%')";
     }
 }

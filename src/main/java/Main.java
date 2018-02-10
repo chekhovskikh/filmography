@@ -1,4 +1,5 @@
 import com.google.inject.Injector;
+import entitiy.Genre;
 import entitiy.Producer;
 import mvc.*;
 import util.binder.InjectorBuilder;
@@ -14,17 +15,19 @@ import java.util.Date;
 
 public class Main {
     public static void main(String[] args) throws SQLException, IOException, ParseException, ExecutionException, InterruptedException {
-        InputStream inputProperties = new FileInputStream("src/main/resources/oracle.properties");
+        InputStream inputProperties = new FileInputStream("src/main/resources/postgres.properties");
         Properties properties = new Properties();
         properties.load(inputProperties);
 
         Injector injector = new InjectorBuilder(properties).getInjector();
         Controller controller = injector.getInstance(Controller.class);
 
-        Producer producer = new Producer();
-        producer.setBirthdate(new Date());
-
-        System.out.println(controller.getModel().getProducers());
+        /*Producer producer = new Producer();
+        producer.setBirthdate(new Date());*/
+        /*controller.addGenre(new Genre("Фантастика", 0));*/
+        controller.removeGenre(1);
+        for (Genre genre : controller.getModel().getGenres())
+            System.out.println(genre.getGenreName() + "\n");
 
 
         /*Genre genre = (Genre)genreDAO.get(2);

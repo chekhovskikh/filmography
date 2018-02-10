@@ -142,6 +142,6 @@ public class FranchiseDao implements EntityDao<Franchise> {
     }
 
     private String regexpLike(String attribute, String value) {
-        return "REGEXP_LIKE(" + attribute + ", '(^| |-)+" + value + "\\w*','i')";
+        return "UPPER(" + attribute + ") LIKE UPPER('%" + value + "%')";
     }
 }

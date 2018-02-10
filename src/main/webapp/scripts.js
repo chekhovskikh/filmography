@@ -48,7 +48,14 @@ function getAddName(addId, addName, page){
 
         success: function (response) {
             var entity = response;
-            document.getElementById(addName).value = entity.name;
+            if (page == "films")
+                document.getElementById(addName).value = entity.filmName;
+            else if (page == "franchises")
+                document.getElementById(addName).value = entity.franchiseName;
+            else if (page == "producers")
+                document.getElementById(addName).value = entity.producerName;
+            else if (page == "genres")
+                document.getElementById(addName).value = entity.genreName;
         },
 
         error: function (response) {
@@ -65,7 +72,14 @@ function getSelectedName(redirect, selectedId, selectedName, page){
 
         success: function (response) {
             var entity = response;
-            document.getElementById(selectedName).value = entity.name;
+            if (page == "films")
+                document.getElementById(selectedName).value = entity.filmName;
+            else if (page == "franchises")
+                document.getElementById(selectedName).value = entity.franchiseName;
+            else if (page == "producers")
+                document.getElementById(selectedName).value = entity.producerName;
+            else if (page == "genres")
+                document.getElementById(selectedName).value = entity.genreName;
             hideElement(redirect, false); //см
         },
 
@@ -777,7 +791,7 @@ function refreshGenres(genres) {
     for(var i = genres.length - 1; i >= 0; i--){
         var div = document.createElement("div");
         div.setAttribute("class", "cover");
-        div.setAttribute("id", genres[i].id);
+        div.setAttribute("id", genres[i].genreId);
         var first = mainElem.childNodes[0];
         mainElem.insertBefore(div, first);
 
@@ -787,23 +801,23 @@ function refreshGenres(genres) {
 
         var deleteButton = document.createElement("div");
         deleteButton.setAttribute("class", "text-delete");
-        deleteButton.setAttribute("onclick", "deleteGenre('" + genres[i].id + "')");
+        deleteButton.setAttribute("onclick", "deleteGenre('" + genres[i].genreId + "')");
         deleteButton.innerHTML = "X";
         div.appendChild(deleteButton);
 
         var shadow = document.createElement("div");
         shadow.setAttribute("class", "shadow");
-        shadow.setAttribute("onclick", "openSelectedGenre('#openInfo','" + genres[i].id + "')");
+        shadow.setAttribute("onclick", "openSelectedGenre('#openInfo','" + genres[i].genreId + "')");
         div.appendChild(shadow);
 
         var name = document.createElement("div");
         name.setAttribute("class", "text-name");
-        name.innerHTML = genres[i].name;
+        name.innerHTML = genres[i].genreName;
         shadow.appendChild(name);
 
         var index = document.createElement("div");
         index.setAttribute("class", "text-id");
-        index.innerHTML = genres[i].id;
+        index.innerHTML = genres[i].genreId;
         shadow.appendChild(index);
     }
     randomCover();
@@ -852,7 +866,7 @@ function openSelectedGenre(path, genreId) {
             else {
                 hideElement("parentRedirect", true);
             }
-            document.getElementById("selectedGenreName").value = genre.name;
+            document.getElementById("selectedGenreName").value = genre.genreName;
         },
 
         error: function (response) {
@@ -868,7 +882,7 @@ function getAsyncParentGenre(id) {
 
         success: function (response) {
             var genre = response;
-            document.getElementById("selectedParentName").value = genre.name;
+            document.getElementById("selectedParentName").value = genre.genreName;
         },
 
         error: function (response) {
@@ -878,10 +892,11 @@ function getAsyncParentGenre(id) {
 }
 
 function addGenre(){
+    var parentId = document.getElementById("addParentId").value;
     var genre = {
-        id: 0,
-        name: document.getElementById("addGenreName").value,
-        parentId: document.getElementById("addParentId").value
+        genreId: 0,
+        genreName: document.getElementById("addGenreName").value,
+        parentId: (parentId == "" ? 0 : parentId)
     };
 
     jQuery.ajax({
@@ -902,10 +917,11 @@ function addGenre(){
 }
 
 function updateGenre(){
+    var parentId = document.getElementById("selectedParentId").value;
     var genre = {
-        id: document.getElementById("selectedGenreId").value,
-        name: document.getElementById("selectedGenreName").value,
-        parentId: document.getElementById("selectedParentId").value
+        genreId: document.getElementById("selectedGenreId").value,
+        genreName: document.getElementById("selectedGenreName").value,
+        parentId: (parentId == "" ? 0 : parentId)
     };
 
     jQuery.ajax({
@@ -926,9 +942,8 @@ function updateGenre(){
 }
 
 function extendedSearchGenres() {
-
     var genreFilter = {
-        name: document.getElementById("genreNameFilter").value,
+        genreName: document.getElementById("genreNameFilter").value,
         parentName: document.getElementById("parentNameFilter").value
     };
 

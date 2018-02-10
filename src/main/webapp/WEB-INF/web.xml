@@ -5,42 +5,42 @@
          version="3.1">
 
    <servlet>
-       <servlet-producerName>genres</servlet-producerName>
+       <servlet-name>genres</servlet-name>
        <servlet-class>servlet.GenreServlet</servlet-class>
    </servlet>
 
     <servlet>
-        <servlet-producerName>producers</servlet-producerName>
+        <servlet-name>producers</servlet-name>
         <servlet-class>servlet.ProducerServlet</servlet-class>
     </servlet>
 
     <servlet>
-        <servlet-producerName>franchises</servlet-producerName>
+        <servlet-name>franchises</servlet-name>
         <servlet-class>servlet.FranchiseServlet</servlet-class>
     </servlet>
 
     <servlet>
-        <servlet-producerName>films</servlet-producerName>
+        <servlet-name>films</servlet-name>
         <servlet-class>servlet.FilmServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-producerName>producers</servlet-producerName>
+        <servlet-name>producers</servlet-name>
         <url-pattern>/producers</url-pattern>
     </servlet-mapping>
 
    <servlet-mapping>
-       <servlet-producerName>genres</servlet-producerName>
+       <servlet-name>genres</servlet-name>
        <url-pattern>/genres</url-pattern>
    </servlet-mapping>
 
     <servlet-mapping>
-    <servlet-producerName>franchises</servlet-producerName>
+    <servlet-name>franchises</servlet-name>
     <url-pattern>/franchises</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-producerName>films</servlet-producerName>
+        <servlet-name>films</servlet-name>
         <url-pattern>/films</url-pattern>
     </servlet-mapping>
    

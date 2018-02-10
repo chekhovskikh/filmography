@@ -140,6 +140,6 @@ public class FilmDao implements EntityDao<Film> {
     }
 
     private String regexpLike(String attribute, String value){
-        return "REGEXP_LIKE(" + attribute + ", '(^| |-)+" + value + "\\w*','i')";
+        return "UPPER(" + attribute + ") LIKE UPPER('%" + value + "%')";
     }
 }

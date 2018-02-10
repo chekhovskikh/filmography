@@ -17,12 +17,12 @@
       <div class="loader-section section-right"></div>
     </div>
 
-    <div style="margin-left: 40%; margin-top: 15%;">
-      <div class="site-title">Музыка</div>
-      <div class="btn-circle" onclick="redirecting('/films')">Песни<span></span></div>
-      <div class="btn-circle" onclick="redirecting('/producers')">Исполнители<span></span></div>
+    <div style="margin-left: 36%; margin-top: 15%;">
+      <div class="site-title">Фильмография</div>
+      <div class="btn-circle" onclick="redirecting('/films')">Фильмы<span></span></div>
+      <div class="btn-circle" onclick="redirecting('/franchises')">Франшизы<span></span></div>
+      <div class="btn-circle" onclick="redirecting('/producers')">Режиссеры<span></span></div>
       <div class="btn-circle" onclick="redirecting('/genres')">Жанры<span></span></div>
-      <div class="btn-circle" onclick="redirecting('/franchises')">Альбомы<span></span></div>
     </div>
   </body>
 </html>
