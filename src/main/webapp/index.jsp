@@ -19,10 +19,10 @@
 
     <div style="margin-left: 40%; margin-top: 15%;">
       <div class="site-title">Музыка</div>
-      <div class="btn-circle" onclick="redirecting('/songs')">Песни<span></span></div>
-      <div class="btn-circle" onclick="redirecting('/bands')">Исполнители<span></span></div>
+      <div class="btn-circle" onclick="redirecting('/films')">Песни<span></span></div>
+      <div class="btn-circle" onclick="redirecting('/producers')">Исполнители<span></span></div>
       <div class="btn-circle" onclick="redirecting('/genres')">Жанры<span></span></div>
-      <div class="btn-circle" onclick="redirecting('/albums')">Альбомы<span></span></div>
+      <div class="btn-circle" onclick="redirecting('/franchises')">Альбомы<span></span></div>
     </div>
   </body>
 </html>

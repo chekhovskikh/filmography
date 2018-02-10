@@ -1,8 +1,8 @@
 package mvc.dao;
 
 import dao.EntityDao;
-import entities.Genre;
-import entities.filters.EntityFilter;
+import entitiy.Genre;
+import entitiy.filter.EntityFilter;
 
 import java.sql.SQLException;
 import java.text.ParseException;

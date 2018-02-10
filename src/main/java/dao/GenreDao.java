@@ -1,10 +1,10 @@
 package dao;
 
-import entities.Genre;
-import dbdrivers.DbManager;
-import dbdrivers.OracleManager;
-import entities.filters.EntityFilter;
-import entities.filters.GenreFilter;
+import entitiy.Genre;
+import util.dbdrivers.DbManager;
+import entitiy.filter.EntityFilter;
+import entitiy.filter.GenreFilter;
+import util.dbdrivers.PostgresManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -27,7 +27,7 @@ public class GenreDao implements EntityDao<Genre> {
         int port = Integer.parseInt(properties.getProperty("port"));
         String sid = properties.getProperty("sid");
 
-        DbManager manager = new OracleManager(username, password);
+        DbManager manager = new PostgresManager(username, password);
         connection = manager.connect(host, port, sid);
         statement = connection.createStatement();
         genres = new ArrayList<>();
@@ -43,32 +43,32 @@ public class GenreDao implements EntityDao<Genre> {
         ResultSet set;
         set = statement.executeQuery("SELECT * FROM genre");
         while (set.next())
-            genres.add(new Genre(set.getInt("id"),
-                    set.getString("name"),
+            genres.add(new Genre(set.getInt("genre_id"),
+                    set.getString("genre_name"),
                     set.getInt("parent_id")));
         return genres;
     }
 
     public Genre get(int id) throws SQLException {
         ResultSet set;
-        set = statement.executeQuery("SELECT * FROM genre WHERE id=" + id);
+        set = statement.executeQuery("SELECT * FROM genre WHERE genre_id=" + id);
         set.next();
-        return new Genre(set.getInt("id"),
-                set.getString("name"),
+        return new Genre(set.getInt("genre_id"),
+                set.getString("genre_name"),
                 set.getInt("parent_id"));
     }
 
     public void add(Genre genre) throws SQLException {
-        statement.executeUpdate("INSERT INTO genre(name, parent_id) values('"
-                + genre.getName() + "',"
+        statement.executeUpdate("INSERT INTO genre(genre_name, parent_id) values('"
+                + genre.getGenreName() + "',"
                 + (genre.getParentId() == 0 ? "null" : genre.getParentId()) + ")");
     }
 
     public void addAll(List<Genre> genres) throws SQLException {
-        String sqlRequest = "INSERT INTO genre(name, parent_id) values ";
+        String sqlRequest = "INSERT INTO genre(genre_name, parent_id) values ";
         for (int i = 0, size = genres.size(); i < size; i++) {
             Genre genre = genres.get(i);
-            sqlRequest += "('" + genre.getName() + "',"
+            sqlRequest += "('" + genre.getGenreName() + "',"
                     + (genre.getParentId() == 0 ? "null" : genre.getParentId()) + ")";
             if (i != size - 1)
                 sqlRequest += ",";
@@ -77,24 +77,24 @@ public class GenreDao implements EntityDao<Genre> {
     }
 
     public void remove(int id) throws SQLException {
-        statement.executeUpdate("DELETE FROM genre WHERE id=" + id);
+        statement.executeUpdate("DELETE FROM genre WHERE genre_id=" + id);
     }
 
     public void update(Genre genre) throws SQLException {
         statement.executeUpdate("UPDATE genre " +
-                "SET name='" + genre.getName() +
+                "SET genre_name='" + genre.getGenreName() +
                 "', parent_id=" + (genre.getParentId() == 0 ? "null" : genre.getParentId()) +
-                " WHERE id=" + genre.getId());
+                " WHERE genre_id=" + genre.getId());
     }
 
     public List<Genre> getByName(String name) throws SQLException, ParseException {
         genres.clear();
         ResultSet set;
         set = statement.executeQuery("SELECT * FROM genre WHERE " +
-                "REGEXP_LIKE(genre.name, '(^| |-)+" + name + "\\w*','i')");
+                regexpLike("genre.genre_name", name));
         while (set.next())
-            genres.add(new Genre(set.getInt("id"),
-                    set.getString("name"),
+            genres.add(new Genre(set.getInt("genre_id"),
+                    set.getString("genre_name"),
                     set.getInt("parent_id")));
         return genres;
     }
@@ -104,12 +104,12 @@ public class GenreDao implements EntityDao<Genre> {
         genres.clear();
         ResultSet set;
         set = statement.executeQuery("SELECT * FROM genre " +
-                "FULL JOIN genre parent ON parent.id = genre.parent_id WHERE " +
-                regexpLike("genre.name", filter.getName()) + " AND " +
-                regexpLike("parent.name", filter.getParentName()));
+                "FULL JOIN genre parent ON parent.genre_id = genre.parent_id WHERE " +
+                regexpLike("genre.genre_name", filter.getName()) + " AND " +
+                regexpLike("parent.genre_name", filter.getParentName()));
         while (set.next())
-            genres.add(new Genre(set.getInt("id"),
-                    set.getString("name"),
+            genres.add(new Genre(set.getInt("genre_id"),
+                    set.getString("genre_name"),
                     set.getInt("parent_id")));
         return genres;
     }

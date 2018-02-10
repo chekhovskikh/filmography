@@ -1,6 +1,6 @@
 package mvc.model;
 
-import entities.Genre;
+import entitiy.Genre;
 import org.junit.Test;
 
 import java.io.IOException;

@@ -14,32 +14,32 @@
 <div class="border">
     <ul class="navigation-bar">
         <li class="navigation-bar" onclick="redirecting('/index.jsp')">Главная</li>
-        <li class="navigation-bar" onclick="redirecting('/songs')">Песни</li>
-        <li class="navigation-bar" onclick="redirecting('/bands')">Исполнители</li>
+        <li class="navigation-bar" onclick="redirecting('/films')">Песни</li>
+        <li class="navigation-bar" onclick="redirecting('/producers')">Исполнители</li>
         <li class="navigation-bar-active">Жанры</li>
-        <li class="navigation-bar" onclick="redirecting('/albums')">Альбомы</li>
+        <li class="navigation-bar" onclick="redirecting('/franchises')">Альбомы</li>
     </ul>
 </div>
 <div class="frame">
     <div class="frame-search">
-        <form action="" method="post" class="search" id="search_form">
-            <input type="search" id="search_string" placeholder="поиск" class="search-input" required />
-            <input type="button" id="search_button" value="" class="search-submit" onclick="searchGenres()"/>
+        <form action="" method="post" class="search" genreId="search_form">
+            <input type="search" genreId="search_string" placeholder="поиск" class="search-input" required />
+            <input type="button" genreId="search_button" value="" class="search-submit" onclick="searchGenres()"/>
         </form>
 
         <div class="extended-search" onclick="redirecting('#openExtendedSearch')"></div>
-        <div id="openExtendedSearch" class="info-dialog">
+        <div genreId="openExtendedSearch" class="info-dialog">
             <div>
                 <div class="info-close" title="Закрыть" onclick="redirecting('#close')"></div>
                 <div class="info-title">Фильтр</div>
                 <table style="width: 300px" cellpadding="9">
                     <tr>
-                        <td class="info-name">Название:</td>
-                        <td colspan="3"><input id="genreNameFilter" class="info-value" value=""></td>
+                        <td class="info-producerName">Название:</td>
+                        <td colspan="3"><input genreId="genreNameFilter" class="info-value" value=""></td>
                     </tr>
                     <tr>
-                        <td class="info-name">Наджанр:</td>
-                        <td colspan="3"><input id="parentNameFilter" class="info-value" value=""></td>
+                        <td class="info-producerName">Наджанр:</td>
+                        <td colspan="3"><input genreId="parentNameFilter" class="info-value" value=""></td>
                     </tr>
                     <tr>
                         <td colspan="4"><button class="save" onclick="extendedSearchGenres()">Поиск</button></td>
@@ -49,19 +49,19 @@
         </div>
 
         <div class="add" onclick="redirecting('#openAdd')"></div>
-        <div id="openAdd" class="info-dialog">
+        <div genreId="openAdd" class="info-dialog">
             <div>
                 <div class="info-close" title="Закрыть" onclick="redirecting('#close')"></div>
                 <div class="info-title">Добавить</div>
                 <table style="width: 300px" cellpadding="9">
                     <tr>
-                        <td class="info-name">Название:</td>
-                        <td colspan="3"><input id="addGenreName" class="info-value" value=""></td>
+                        <td class="info-producerName">Название:</td>
+                        <td colspan="3"><input genreId="addGenreName" class="info-value" value=""></td>
                     </tr>
                     <tr>
-                        <td class="info-name">Наджанр:</td>
-                        <td><input id="addParentId" class="info-value" style="width: 30px" onchange="getAddName('addParentId', 'addParentName', 'genres')" value=""></td>
-                        <td><input id="addParentName" readonly class="info-value-readonly" style="width: 150px" value=""/></td>
+                        <td class="info-producerName">Наджанр:</td>
+                        <td><input genreId="addParentId" class="info-value" style="width: 30px" onchange="getAddName('addParentId', 'addParentName', 'genres')" value=""></td>
+                        <td><input genreId="addParentName" readonly class="info-value-readonly" style="width: 150px" value=""/></td>
                     </tr>
                     <tr>
                         <td colspan="4"><button class="save" onclick="addGenre()">Добавить</button></td>
@@ -71,37 +71,37 @@
         </div>
     </div>
 
-    <div id="main" style="margin: 0px 0% 0% 8%;">
+    <div genreId="main" style="margin: 0px 0% 0% 8%;">
         <c:forEach items="${genres}" var="genre">
-            <div id="${genre.id}" class="cover">
+            <div genreId="${genre.genreId}" class="cover">
                 <div class="grad-cover"></div>
-                <div class="text-delete" onclick="deleteGenre('${genre.id}')">X</div>
-                <div class="shadow" onclick="openSelectedGenre('#openInfo', ${genre.id})">
-                    <div class="text-name">${genre.name}</div>
-                    <div class="text-id">${genre.id}</div>
+                <div class="text-delete" onclick="deleteGenre('${genre.genreId}')">X</div>
+                <div class="shadow" onclick="openSelectedGenre('#openInfo', ${genre.genreId})">
+                    <div class="text-producerName">${genre.producerName}</div>
+                    <div class="text-genreId">${genre.genreId}</div>
                 </div>
             </div>
         </c:forEach>
 
-        <div id="openInfo" class="info-dialog">
+        <div genreId="openInfo" class="info-dialog">
             <div>
                 <div class="info-close" title="Закрыть" onclick="redirecting('#close')"></div>
                 <div class="info-title">Информация</div>
 
                 <table style="width: 300px" cellpadding="9">
                     <tr>
-                        <td class="info-name">Идентификатор:</td>
-                        <td colspan="3"><input readonly id="selectedGenreId" class="info-value-readonly" value="${selectedGenre.id}"/></td>
+                        <td class="info-producerName">Идентификатор:</td>
+                        <td colspan="3"><input readonly genreId="selectedGenreId" class="info-value-readonly" value="${selectedGenre.genreId}"/></td>
                     </tr>
                     <tr>
-                        <td class="info-name">Название:</td>
-                        <td colspan="3"><input id="selectedGenreName" class="info-value" value="${selectedGenre.name}"></td>
+                        <td class="info-producerName">Название:</td>
+                        <td colspan="3"><input genreId="selectedGenreName" class="info-value" value="${selectedGenre.producerName}"></td>
                     </tr>
                     <tr>
-                        <td class="info-name">Наджанр:</td>
-                        <td><input id="selectedParentId" class="info-value" onchange="getSelectedName('parentRedirect', 'selectedParentId', 'selectedParentName', 'genres')" style="width: 30px" value="${selectedGenre.parentId}"></td>
-                        <td><input id="selectedParentName" readonly class="info-value-readonly" style="width: 120px" value="${parentName}"/></td>
-                        <td><div id="parentRedirect" class="info-redirect" onclick="redirectingOnSelected('genres', 'selectedParentId')">></div></td>
+                        <td class="info-producerName">Наджанр:</td>
+                        <td><input genreId="selectedParentId" class="info-value" onchange="getSelectedName('parentRedirect', 'selectedParentId', 'selectedParentName', 'genres')" style="width: 30px" value="${selectedGenre.parentId}"></td>
+                        <td><input genreId="selectedParentName" readonly class="info-value-readonly" style="width: 120px" value="${parentName}"/></td>
+                        <td><div genreId="parentRedirect" class="info-redirect" onclick="redirectingOnSelected('genres', 'selectedParentId')">></div></td>
                     </tr>
                     <tr>
                         <td colspan="4"><button class="save" onclick="updateGenre()">Сохранить</button></td>

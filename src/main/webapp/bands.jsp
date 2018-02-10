@@ -14,33 +14,33 @@
 <div class="border">
     <ul class="navigation-bar">
         <li class="navigation-bar" onclick="redirecting('/index.jsp')">Главная</li>
-        <li class="navigation-bar" onclick="redirecting('/songs')">Песни</li>
+        <li class="navigation-bar" onclick="redirecting('/films')">Песни</li>
         <li class="navigation-bar-active">Исполнители</li>
         <li class="navigation-bar" onclick="redirecting('/genres')">Жанры</li>
-        <li class="navigation-bar" onclick="redirecting('/albums')">Альбомы</li>
+        <li class="navigation-bar" onclick="redirecting('/franchises')">Альбомы</li>
     </ul>
 </div>
 <div class="frame">
     <div class="frame-search">
-        <form action="" method="post" class="search" id="search_form">
-            <input type="search" id="search_string" placeholder="поиск" class="search-input" required />
-            <input type="button" id="search_button" value="" class="search-submit" onclick="searchBands()"/>
+        <form action="" method="post" class="search" genreId="search_form">
+            <input type="search" genreId="search_string" placeholder="поиск" class="search-input" required />
+            <input type="button" genreId="search_button" value="" class="search-submit" onclick="searchBands()"/>
         </form>
 
 
         <div class="extended-search" onclick="redirecting('#openExtendedSearch')"></div>
-        <div id="openExtendedSearch" class="info-dialog">
+        <div genreId="openExtendedSearch" class="info-dialog">
             <div>
                 <div class="info-close" title="Закрыть" onclick="redirecting('#close')"></div>
                 <div class="info-title">Фильтр</div>
                 <table style="width: 300px" cellpadding="9">
                     <tr>
-                        <td class="info-name">Название:</td>
-                        <td colspan="3"><input id="bandNameFilter" class="info-value" value=""></td>
+                        <td class="info-producerName">Название:</td>
+                        <td colspan="3"><input genreId="bandNameFilter" class="info-value" value=""></td>
                     </tr>
                     <tr>
-                        <td class="info-name">Основание:</td>
-                        <td colspan="3"><input id="bandFoundationFilter" type="date" class="info-value" value=""></td>
+                        <td class="info-producerName">Основание:</td>
+                        <td colspan="3"><input genreId="bandFoundationFilter" type="date" class="info-value" value=""></td>
                     </tr>
                     <tr>
                         <td colspan="4"><button class="save" onclick="extendedSearchBands()">Поиск</button></td>
@@ -50,18 +50,18 @@
         </div>
 
         <div class="add" onclick="redirecting('#openAdd')"></div>
-        <div id="openAdd" class="info-dialog">
+        <div genreId="openAdd" class="info-dialog">
             <div>
                 <div class="info-close" title="Закрыть" onclick="redirecting('#close')"></div>
                 <div class="info-title">Добавить</div>
                 <table style="width: 300px" cellpadding="9">
                     <tr>
-                        <td class="info-name">Название:</td>
-                        <td colspan="3"><input id="addBandName" class="info-value" value=""></td>
+                        <td class="info-producerName">Название:</td>
+                        <td colspan="3"><input genreId="addBandName" class="info-value" value=""></td>
                     </tr>
                     <tr>
-                        <td class="info-name">Основание:</td>
-                        <td colspan="3"><input id="addBandFoundation" type="date" class="info-value" value=""></td>
+                        <td class="info-producerName">Основание:</td>
+                        <td colspan="3"><input genreId="addBandFoundation" type="date" class="info-value" value=""></td>
                     </tr>
                     <tr>
                         <td colspan="4"><button class="save" onclick="addBand()">Добавить</button></td>
@@ -71,35 +71,35 @@
         </div>
     </div>
 
-    <div id="main" style="margin: 0px 5% 0% 5%;">
-        <c:forEach items="${bands}" var="band">
-            <div id="${band.id}" class="rectangle">
-                <div class="data-element" onclick="openSelectedBand('#openInfo', ${band.id})">
-                    <div class="data-index">${band.id}</div>
-                    <div class="data-name" style="width: 75%;">${band.name}</div>
-                    <div class="data-time" style="width: 15%;">${band.defaultDateToString()}</div>
+    <div genreId="main" style="margin: 0px 5% 0% 5%;">
+        <c:forEach items="${producers}" var="producer">
+            <div genreId="${producer.genreId}" class="rectangle">
+                <div class="data-element" onclick="openSelectedBand('#openInfo', ${producer.genreId})">
+                    <div class="data-index">${producer.genreId}</div>
+                    <div class="data-producerName" style="width: 75%;">${producer.producerName}</div>
+                    <div class="data-duration" style="width: 15%;">${producer.defaultDateToString()}</div>
                 </div>
-                <div class="data-delete" onclick="deleteBand('${band.id}')"></div>
+                <div class="data-delete" onclick="deleteBand('${producer.genreId}')"></div>
             </div>
         </c:forEach>
 
-        <div id="openInfo" class="info-dialog">
+        <div genreId="openInfo" class="info-dialog">
             <div>
                 <div class="info-close" title="Закрыть" onclick="redirecting('#close')"></div>
                 <div class="info-title">Информация</div>
 
                 <table style="width: 300px" cellpadding="9">
                     <tr>
-                        <td class="info-name">Идентификатор:</td>
-                        <td colspan="3"><input id="selectedBandId" readonly class="info-value-readonly" value="${selectedBand.id}"/></td>
+                        <td class="info-producerName">Идентификатор:</td>
+                        <td colspan="3"><input genreId="selectedBandId" readonly class="info-value-readonly" value="${selectedProducer.genreId}"/></td>
                     </tr>
                     <tr>
-                        <td class="info-name">Название:</td>
-                        <td colspan="3"><input id="selectedBandName" class="info-value" value="${selectedBand.name}"></td>
+                        <td class="info-producerName">Название:</td>
+                        <td colspan="3"><input genreId="selectedBandName" class="info-value" value="${selectedProducer.producerName}"></td>
                     </tr>
                     <tr>
-                        <td class="info-name">Основание:</td>
-                        <td colspan="3"><input id="selectedBandFoundation" class="info-value" type="date" value="${selectedBand.dateToString()}"></td>
+                        <td class="info-producerName">Основание:</td>
+                        <td colspan="3"><input genreId="selectedBandFoundation" class="info-value" type="date" value="${selectedProducer.dateToString()}"></td>
                     </tr>
                     <tr>
                         <td colspan="4"><button class="save" onclick="updateBand()">Сохранить</button></td>

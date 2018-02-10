@@ -1,7 +1,7 @@
 import com.google.inject.Injector;
-import entities.Band;
-import music.*;
-import music.guice.InjectorBuilder;
+import entitiy.Producer;
+import mvc.*;
+import util.binder.InjectorBuilder;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,10 +21,10 @@ public class Main {
         Injector injector = new InjectorBuilder(properties).getInjector();
         Controller controller = injector.getInstance(Controller.class);
 
-        Band band = new Band();
-        band.setFoundation(new Date());
+        Producer producer = new Producer();
+        producer.setBirthdate(new Date());
 
-        System.out.println(controller.getModel().getAlbums());
+        System.out.println(controller.getModel().getProducers());
 
 
         /*Genre genre = (Genre)genreDAO.get(2);
@@ -38,16 +38,16 @@ public class Main {
         genreDAO.update(genre2);
         System.out.println(genre1);
         System.out.println(genre2);*/
-        /*Band band1 = new Band(1,"Ivan", EntityUtils.parseDate("2001-01-01"));
-        Band band2 = new Band(2,"Vlad", EntityUtils.parseDate("2002-02-02"));
-        List<Band> list = new ArrayList<>();
+        /*Producer band1 = new Producer(1,"Ivan", EntityUtils.parseDate("2001-01-01"));
+        Producer band2 = new Producer(2,"Vlad", EntityUtils.parseDate("2002-02-02"));
+        List<Producer> list = new ArrayList<>();
         list.add(band1);
         list.add(band2);
         String s = EntityUtils.serializeList(list);
 
         System.out.print(s);
-        List<Band> list2 = EntityUtils.deserializeList(s, Band.class);
-        Band band3 = list2.get(0);
+        List<Producer> list2 = EntityUtils.deserializeList(s, Producer.class);
+        Producer band3 = list2.get(0);
         System.out.println(band3);
         System.out.println("-----------------");
         Type type = new TypeToken<List<Entity>>(){}.getType();
@@ -65,21 +65,21 @@ public class Main {
         songs = ms.searchSongs(name);
         System.out.println(songs);*/
 
-        //ms.addBands(s);
-        //ms.removeBand(1);
+        //ms.addProducers(s);
+        //ms.removeProducer(1);
         //ms.searchBands("Ivan");
         //String first = ms.getAllBands();
         //String first = ms.getBand(2);
-        //EntityUtils.deserializeList(first,Band.class);
+        //EntityUtils.deserializeList(first,Producer.class);
         //System.out.println(first);
         /*for (Entity elem : first) {
-            Band printElem = (Band)elem;
+            Producer printElem = (Producer)elem;
             System.out.println(printElem.getSelectedName());
         }*/
         //ms.removeAllBands();
         /*List<Entity> second = ms.searchBands("Ivan");
         for (Entity elem : second) {
-            Band printElem = (Band)elem;
+            Producer printElem = (Producer)elem;
             System.out.println(printElem.getSelectedName());
         }*/
         //ms.close();*/

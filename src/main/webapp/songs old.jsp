@@ -11,61 +11,61 @@
     <page:header title="Меню"/>
 </head>
 <hr/>
-<form action="songs" method="POST">
-    <input type="hidden" name="action" value="put">
+<form action="films" method="POST">
+    <input type="hidden" producerName="action" value="put">
     Название песни:<br/>
-    <input type="text" name="name" value="" title="Название" required>
+    <input type="text" producerName="producerName" value="" title="Название" required>
     <br/><br/>
     Длительность:<br/>
-    <input type="text" name="time" value="" title="Длительность" required>
+    <input type="text" producerName="duration" value="" title="Длительность" required>
     <br/><br/>
     ID Группы: <br/>
-        <input style="float: left;"  onchange="getNameBand(true)" id="addBand" type="text" name="addBand" value=""
+        <input style="float: left;"  onchange="getNameBand(true)" genreId="addBand" type="text" producerName="addBand" value=""
                title="Название Группы" list="bandslists" required>
-        <datalist id="bandslists">
-            <c:forEach items="${bands}" var="band">
-                <input type="hidden" id="addBandId" name="bandId" value=${band.id}>
-                <option value=${band.name}>
+        <datalist genreId="bandslists">
+            <c:forEach items="${producers}" var="producer">
+                <input type="hidden" genreId="addBandId" producerName="producerId" value=${producer.genreId}>
+                <option value=${producer.producerName}>
                 </c:forEach>
         </datalist>
-    <!-- <div style="margin-left: 12%" id="addBandName"></div> -->
+    <!-- <div style="margin-left: 12%" genreId="addBandName"></div> -->
     <br/><br/>
     ID Альбома:<br/>
-    <input style="float: left;" onchange="getNameAlbum(true)" id="addAlbumId" type="text" name="albumId" value=""
+    <input style="float: left;" onchange="getNameAlbum(true)" genreId="addAlbumId" type="text" producerName="franchiseId" value=""
            title="ID Альбома" required>
-    <div style="margin-left: 12%" id="addAlbumName"></div>
+    <div style="margin-left: 12%" genreId="addAlbumName"></div>
     <br/><br/>
     ID Жанра:<br/>
-    <input style="float: left;" onchange="getNameGenre(true)" id="addGenreId" type="text" name="genreId" value=""
+    <input style="float: left;" onchange="getNameGenre(true)" genreId="addGenreId" type="text" producerName="genreId" value=""
            title="ID Жанра"  required>
-    <div style="margin-left: 12%" id="addGenreName"></div>
+    <div style="margin-left: 12%" genreId="addGenreName"></div>
     <br/><br/>
     <input class="input-add" type="submit" style="margin-left: 1.3%" value="Добавить"><br/>
 </form>
 <hr/>
-<form action="songs" method="POST" class="search">
-    <input type="hidden" name="action" value="search"/>
-    <input type="search" name="searchName" placeholder="поиск" class="input" required/>
+<form action="films" method="POST" class="search">
+    <input type="hidden" producerName="action" value="search"/>
+    <input type="search" producerName="searchName" placeholder="поиск" class="input" required/>
     <input type="submit" value="" class="submit" />
 </form>
 <script>
     function getNameBand(isAdd) {
-        var bandId = 0;
+        var producerId = 0;
         if (isAdd) {
-            bandId = document.getElementById("addBandId").value;
+            producerId = document.getElementById("addBandId").value;
             document.getElementById("addBandName").innerHTML = '';
         }
         else {
-            bandId = document.getElementById("selectedBandId").value;
+            producerId = document.getElementById("selectedBandId").value;
             document.getElementById("selectedBandName").innerHTML = '';
         }
-        <c:forEach items="${bands}" var="album">
-        var servletBandId = '${album.id}';
-        if (bandId == servletBandId)
-            if (isAdd) document.getElementById("addBandName").innerHTML = '${album.name}';
+        <c:forEach items="${producers}" var="franchise">
+        var servletBandId = '${franchise.genreId}';
+        if (producerId == servletBandId)
+            if (isAdd) document.getElementById("addBandName").innerHTML = '${franchise.producerName}';
             else {
-                document.getElementById("selectedBandName").innerHTML = '${album.name}';
-                document.getElementById("refBandId").value = '${album.id}';
+                document.getElementById("selectedBandName").innerHTML = '${franchise.producerName}';
+                document.getElementById("refBandId").value = '${franchise.genreId}';
             }
         </c:forEach>
     }
@@ -80,34 +80,34 @@
             genreId = document.getElementById("selectedGenreId").value;
             document.getElementById("selectedGenreName").innerHTML = '';
         }
-        <c:forEach items="${genres}" var="song">
-        var servletGenreId = '${song.id}';
+        <c:forEach items="${genres}" var="film">
+        var servletGenreId = '${film.genreId}';
         if (genreId == servletGenreId)
-            if (isAdd) document.getElementById("addGenreName").innerHTML = '${song.name}';
+            if (isAdd) document.getElementById("addGenreName").innerHTML = '${film.producerName}';
             else {
-                document.getElementById("selectedGenreName").innerHTML = '${song.name}';
-                document.getElementById("refGenreId").value = '${song.id}';
+                document.getElementById("selectedGenreName").innerHTML = '${film.producerName}';
+                document.getElementById("refGenreId").value = '${film.genreId}';
             }
         </c:forEach>
     }
 
     function getNameAlbum(isAdd) {
-        var albumId = 0;
+        var franchiseId = 0;
         if (isAdd) {
-            albumId = document.getElementById("addAlbumId").value;
+            franchiseId = document.getElementById("addAlbumId").value;
             document.getElementById("addAlbumName").innerHTML = '';
         }
         else {
-            albumId = document.getElementById("selectedAlbumId").value;
+            franchiseId = document.getElementById("selectedAlbumId").value;
             document.getElementById("selectedAlbumName").innerHTML = '';
         }
-        <c:forEach items="${albums}" var="album">
-        var servletAlbumId = '${album.id}';
-        if (albumId == servletAlbumId)
-            if (isAdd) document.getElementById("addAlbumName").innerHTML = '${album.name}';
+        <c:forEach items="${franchises}" var="franchise">
+        var servletAlbumId = '${franchise.genreId}';
+        if (franchiseId == servletAlbumId)
+            if (isAdd) document.getElementById("addAlbumName").innerHTML = '${franchise.producerName}';
             else {
-                document.getElementById("selectedAlbumName").innerHTML = '${album.name}';
-                document.getElementById("refAlbumId").value = '${album.id}';
+                document.getElementById("selectedAlbumName").innerHTML = '${franchise.producerName}';
+                document.getElementById("refAlbumId").value = '${franchise.genreId}';
             }
         </c:forEach>
     }
@@ -120,20 +120,20 @@
         <th colspan="2">Название песни</th>
     </tr>
     </thead>
-    <c:forEach items="${songs}" var="viewedSong">
-        <tr style="background-color: lavender" id=${viewedSong.id}>
+    <c:forEach items="${films}" var="viewedSong">
+        <tr style="background-color: lavender" genreId=${viewedSong.genreId}>
             <td align="center">
                 <button class="input-transparent" style="cursor: pointer"
-                        onclick="redirecting('/bands?id=' + '${viewedSong.bandId}');">${viewedSong.bandId}</button>
+                        onclick="redirecting('/producers?genreId=' + '${viewedSong.producerId}');">${viewedSong.producerId}</button>
             </td>
             <td align="center">
                 <button class="input-transparent" style="cursor: pointer"
-                        onclick="redirecting('/songs?id=' + '${viewedSong.id}');">${viewedSong.name}</button>
+                        onclick="redirecting('/films?genreId=' + '${viewedSong.genreId}');">${viewedSong.producerName}</button>
             </td>
             <td align="center">
-                <form action="songs" method="POST">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="id" value='${viewedSong.id}'>
+                <form action="films" method="POST">
+                    <input type="hidden" producerName="action" value="delete">
+                    <input type="hidden" producerName="genreId" value='${viewedSong.genreId}'>
                     <input type="image" src="/images/del.png" width="25" height="25"
                            alt="УДАЛИТЬ" title="Удалить">
                 </form>
@@ -142,7 +142,7 @@
     </c:forEach>
 </table>
 
-<table id="selectedSong" style="margin-left: 300px" cellpadding="9">
+<table genreId="selectedFilm" style="margin-left: 300px" cellpadding="9">
     <thead>
     <tr style="background-color: royalblue; color: white">
         <th align="center">Параметр</th>
@@ -151,26 +151,26 @@
     </thead>
     <tr style="background-color: lavender">
         <td align="center">Идентификатор</td>
-        <td colspan="2" align="center" id="selectedId">${song.id}</td>
+        <td colspan="2" align="center" genreId="selectedId">${film.genreId}</td>
     </tr>
     <tr style="background-color: lavender">
         <td align="center">Название</td>
-        <td colspan="2"><input class="input-transparent" type="text" id="selectedName" value="${song.name}"></td>
+        <td colspan="2"><input class="input-transparent" type="text" genreId="selectedName" value="${film.producerName}"></td>
     </tr>
     <tr style="background-color: lavender">
         <td align="center">Длительность</td>
-        <td colspan="2"><input class="input-transparent" type="text" id="selectedTime" value="${song.timeToString()}">
+        <td colspan="2"><input class="input-transparent" type="text" genreId="selectedTime" value="${film.timeToString()}">
         </td>
     </tr>
     <tr style="background-color: lavender">
         <td align="center">ID Группы</td>
-        <td><input class="input-transparent" onchange="getNameBand(false)" type="text" id="selectedBandId"
-                   value="${song.bandId}"></td>
-        <td id="selectedBandName">${bandName}</td>
-        <c:if test="${song.bandId > 0}">
+        <td><input class="input-transparent" onchange="getNameBand(false)" type="text" genreId="selectedBandId"
+                   value="${film.producerId}"></td>
+        <td genreId="selectedBandName">${country}</td>
+        <c:if test="${film.producerId > 0}">
             <td>
-                <form action="bands" method="GET">
-                    <input type="hidden" id="refBandId" name="id" value="${song.bandId}">
+                <form action="producers" method="GET">
+                    <input type="hidden" genreId="refBandId" producerName="genreId" value="${film.producerId}">
                     <input type="image" src="/images/ref.png" width="15" height="25" title="Перейти">
                 </form>
             </td>
@@ -178,13 +178,13 @@
     </tr>
     <tr style="background-color: lavender">
         <td align="center">ID Альбома</td>
-        <td><input class="input-transparent" onchange="getNameAlbum(false)" type="text" id="selectedAlbumId"
-                   value="${song.albumId}"></td>
-        <td id="selectedAlbumName">${albumName}</td>
-        <c:if test="${song.albumId > 0}">
+        <td><input class="input-transparent" onchange="getNameAlbum(false)" type="text" genreId="selectedAlbumId"
+                   value="${film.franchiseId}"></td>
+        <td genreId="selectedAlbumName">${franchiseName}</td>
+        <c:if test="${film.franchiseId > 0}">
             <td>
-                <form action="albums" method="GET">
-                    <input type="hidden" id="refAlbumId" name="id" value="${song.albumId}">
+                <form action="franchises" method="GET">
+                    <input type="hidden" genreId="refAlbumId" producerName="genreId" value="${film.franchiseId}">
                     <input type="image" src="/images/ref.png" width="15" height="25" title="Перейти">
                 </form>
             </td>
@@ -192,27 +192,27 @@
     </tr>
     <tr style="background-color: lavender">
         <td align="center">ID Жанра</td>
-        <td><input class="input-transparent" onchange="getNameGenre(false)" type="text" id="selectedGenreId"
-                   value="${song.genreId}"></td>
-        <td id="selectedGenreName">${genreName}</td>
-        <c:if test="${song.genreId > 0}">
+        <td><input class="input-transparent" onchange="getNameGenre(false)" type="text" genreId="selectedGenreId"
+                   value="${film.genreId}"></td>
+        <td genreId="selectedGenreName">${genreName}</td>
+        <c:if test="${film.genreId > 0}">
             <td>
                 <form action="genres" method="GET">
-                    <input type="hidden" id="refGenreId" name="id" value="${song.genreId}">
+                    <input type="hidden" genreId="refGenreId" producerName="genreId" value="${film.genreId}">
                     <input type="image" src="/images/ref.png" width="15" height="25" title="Перейти">
                 </form>
             </td>
         </c:if>
     </tr>
 </table>
-<form action="songs" method="POST">
-    <input type="hidden" name="action" value="update">
-    <input type="hidden" id="updatedId" name="id" value="">
-    <input type="hidden" id="updatedName" name="name" value="">
-    <input type="hidden" id="updatedTime" name="time" value="">
-    <input type="hidden" id="updatedBandId" name="bandId" value="">
-    <input type="hidden" id="updatedAlbumId" name="albumId" value="">
-    <input type="hidden" id="updatedGenreId" name="genreId" value="">
+<form action="films" method="POST">
+    <input type="hidden" producerName="action" value="update">
+    <input type="hidden" genreId="updatedId" producerName="genreId" value="">
+    <input type="hidden" genreId="updatedName" producerName="producerName" value="">
+    <input type="hidden" genreId="updatedTime" producerName="duration" value="">
+    <input type="hidden" genreId="updatedBandId" producerName="producerId" value="">
+    <input type="hidden" genreId="updatedAlbumId" producerName="franchiseId" value="">
+    <input type="hidden" genreId="updatedGenreId" producerName="genreId" value="">
     <input class="input-add" onclick="loadSong()" style="margin-left: 30%" type="submit" value="Сохранить">
 </form>
 </body>

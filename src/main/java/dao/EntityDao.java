@@ -1,7 +1,7 @@
 package dao;
 
-import entities.Entity;
-import entities.filters.EntityFilter;
+import entitiy.Entity;
+import entitiy.filter.EntityFilter;
 
 import java.sql.SQLException;
 import java.text.ParseException;

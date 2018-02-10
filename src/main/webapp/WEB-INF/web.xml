@@ -5,43 +5,43 @@
          version="3.1">
 
    <servlet>
-       <servlet-name>genres</servlet-name>
-       <servlet-class>servlets.GenreServlet</servlet-class>
+       <servlet-producerName>genres</servlet-producerName>
+       <servlet-class>servlet.GenreServlet</servlet-class>
    </servlet>
 
     <servlet>
-        <servlet-name>bands</servlet-name>
-        <servlet-class>servlets.BandServlet</servlet-class>
+        <servlet-producerName>producers</servlet-producerName>
+        <servlet-class>servlet.ProducerServlet</servlet-class>
     </servlet>
 
     <servlet>
-        <servlet-name>albums</servlet-name>
-        <servlet-class>servlets.AlbumServlet</servlet-class>
+        <servlet-producerName>franchises</servlet-producerName>
+        <servlet-class>servlet.FranchiseServlet</servlet-class>
     </servlet>
 
     <servlet>
-        <servlet-name>songs</servlet-name>
-        <servlet-class>servlets.SongServlet</servlet-class>
+        <servlet-producerName>films</servlet-producerName>
+        <servlet-class>servlet.FilmServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>bands</servlet-name>
-        <url-pattern>/bands</url-pattern>
+        <servlet-producerName>producers</servlet-producerName>
+        <url-pattern>/producers</url-pattern>
     </servlet-mapping>
 
    <servlet-mapping>
-       <servlet-name>genres</servlet-name>
+       <servlet-producerName>genres</servlet-producerName>
        <url-pattern>/genres</url-pattern>
    </servlet-mapping>
 
     <servlet-mapping>
-    <servlet-name>albums</servlet-name>
-    <url-pattern>/albums</url-pattern>
+    <servlet-producerName>franchises</servlet-producerName>
+    <url-pattern>/franchises</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>songs</servlet-name>
-        <url-pattern>/songs</url-pattern>
+        <servlet-producerName>films</servlet-producerName>
+        <url-pattern>/films</url-pattern>
     </servlet-mapping>
    
    
