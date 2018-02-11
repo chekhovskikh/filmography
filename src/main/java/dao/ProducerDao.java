@@ -101,8 +101,7 @@ public class ProducerDao implements EntityDao<Producer> {
 
     public void update(Producer producer) throws SQLException {
         try {
-            statement.executeUpdate("INSERT country(country_name) values(" +
-                    "country_name='" + producer.getCitizenship() + "')");
+            statement.executeUpdate("INSERT INTO country(country_name) values('" + producer.getCitizenship() + "')");
         } catch (Exception e) { }
         ResultSet set = statement.executeQuery("SELECT country_id FROM country WHERE country_name='" + producer.getCitizenship() + "'");
         set.next();

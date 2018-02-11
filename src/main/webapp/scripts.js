@@ -574,18 +574,18 @@ function updateProducer(){
     });
 }
 
-//===========================ALBUM=============================//
-function searchAlbums() {
+//===========================FRANCHISE=============================//
+function searchFranchises() {
     var data = document.getElementById("search_string").value;
     jQuery.ajax({
-        url: "albums?action=search",
+        url: "franchises?action=search",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(data),
 
         success: function(response) {
-            var albums = response;
-            refreshAlbums(albums);
+            var franchises = response;
+            refreshFranchises(franchises);
         },
 
         error: function(response) {
@@ -594,17 +594,17 @@ function searchAlbums() {
     });
 }
 
-function refreshAlbums(albums) {
+function refreshFranchises(franchise) {
     var elems = document.getElementsByClassName("cover");
     var count = elems.length - 1;
     for(var i = count; i >= 0; i--){
         elems[i].parentNode.removeChild(elems[i]);
     }
     var mainElem = document.getElementById("main");
-    for(var i = albums.length - 1; i >= 0; i--){
+    for(var i = franchise.length - 1; i >= 0; i--){
         var div = document.createElement("div");
         div.setAttribute("class", "cover");
-        div.setAttribute("id", albums[i].id);
+        div.setAttribute("id", franchise[i].franchiseId);
         var first = mainElem.childNodes[0];
         mainElem.insertBefore(div, first);
 
@@ -614,31 +614,31 @@ function refreshAlbums(albums) {
 
         var deleteButton = document.createElement("div");
         deleteButton.setAttribute("class", "text-delete");
-        deleteButton.setAttribute("onclick", "deleteAlbum('" + albums[i].id + "')");
+        deleteButton.setAttribute("onclick", "deleteFranchise('" + franchise[i].franchiseId + "')");
         deleteButton.innerHTML = "X";
         div.appendChild(deleteButton);
 
         var shadow = document.createElement("div");
         shadow.setAttribute("class", "shadow");
-        shadow.setAttribute("onclick", "openSelectedAlbum('#openInfo','" + albums[i].id + "')");
+        shadow.setAttribute("onclick", "openSelectedFranchise('#openInfo','" + franchise[i].franchiseId + "')");
         div.appendChild(shadow);
 
         var name = document.createElement("div");
         name.setAttribute("class", "text-name");
-        name.innerHTML = albums[i].name;
+        name.innerHTML = franchise[i].franchiseName;
         shadow.appendChild(name);
 
         var index = document.createElement("div");
         index.setAttribute("class", "text-id");
-        index.innerHTML = albums[i].id;
+        index.innerHTML = franchise[i].franchiseId;
         shadow.appendChild(index);
     }
     randomCover();
 }
 
-function deleteAlbum(id) {
+function deleteFranchise(id) {
     jQuery.ajax({
-        url: "albums?action=delete",
+        url: "franchises?action=delete",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(id),
@@ -654,34 +654,26 @@ function deleteAlbum(id) {
     });
 }
 
-function clearInfoAlbum() {
-    document.getElementById("selectedAlbumName").value = "";
-    document.getElementById("selectedAlbumRelease").value = "";
-    document.getElementById("selectedBandId").value = "";
-    document.getElementById("selectedBandName").value = "";
+function clearInfoFranchise() {
+    document.getElementById("selectedFranchiseName").value = "";
+    document.getElementById("selectedFranchiseRelease").value = "";
+    document.getElementById("selectedFranchiseCountry").value = "";
 }
 
-function openSelectedAlbum(path, albumId) {
+function openSelectedFranchise(path, franchiseId) {
     window.location.href = path;
-    document.getElementById("selectedAlbumId").value = albumId;
-    clearInfoAlbum();
+    document.getElementById("selectedFranchiseId").value = franchiseId;
+    clearInfoFranchise();
 
     jQuery.ajax({
-        url: "albums?id=" + albumId,
+        url: "franchises?id=" + franchiseId,
         type: "GET",
 
         success: function (response) {
-            var album = response;
-            if (album.bandId !== 0) {
-                getAsyncBand(album.bandId);
-                document.getElementById("selectedBandId").value = album.bandId;
-                hideElement("bandRedirect", false);
-            }
-            else {
-                hideElement("bandRedirect", true);
-            }
-            document.getElementById("selectedAlbumName").value = album.name;
-            document.getElementById("selectedAlbumRelease").value = dateToString(album.release);
+            var franchise = response;
+            document.getElementById("selectedFranchiseName").value = franchise.franchiseName;
+            document.getElementById("selectedFranchiseRelease").value = dateToString(franchise.release);
+            document.getElementById("selectedFranchiseCountry").value = franchise.country;
         },
 
         error: function (response) {
@@ -690,23 +682,23 @@ function openSelectedAlbum(path, albumId) {
     });
 }
 
-function addAlbum(){
-    var album = {
-        id: 0,
-        name: document.getElementById("addAlbumName").value,
-        release: stringToDate(document.getElementById("addAlbumRelease")),
-        bandId: document.getElementById("addBandId").value
+function addFranchise(){
+    var franchise = {
+        franchiseId: 0,
+        franchiseName: document.getElementById("addFranchiseName").value,
+        release: stringToDate(document.getElementById("addFranchiseRelease").value),
+        country: document.getElementById("addFranchiseCountry").value
     };
 
     jQuery.ajax({
-        url: "albums?action=put",
+        url: "franchises?action=put",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify(album),
+        data: JSON.stringify(franchise),
 
         success: function (response) {
             redirecting('#close');
-            searchAlbums();
+            searchFranchises();
         },
 
         error: function (response) {
@@ -715,23 +707,23 @@ function addAlbum(){
     });
 }
 
-function updateAlbum(){
-    var album = {
-        id: document.getElementById("selectedAlbumId").value,
-        name: document.getElementById("selectedAlbumName").value,
-        release: stringToDate(document.getElementById("selectedAlbumRelease")),
-        bandId: document.getElementById("selectedBandId").value
+function updateFranchise(){
+    var franchise = {
+        franchiseId: document.getElementById("selectedFranchiseId").value,
+        franchiseName: document.getElementById("selectedFranchiseName").value,
+        release: stringToDate(document.getElementById("selectedFranchiseRelease").value),
+        country: document.getElementById("selectedFranchiseCountry").value
     };
 
     jQuery.ajax({
-        url: "albums?action=update",
+        url: "franchises?action=update",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify(album),
+        data: JSON.stringify(franchise),
 
         success: function (response) {
             redirecting('#close');
-            searchAlbums();
+            searchFranchises();
         },
 
         error: function (response) {
@@ -740,23 +732,23 @@ function updateAlbum(){
     });
 }
 
-function extendedSearchAlbums() {
+function extendedSearchFranchises() {
 
-    var albumFilter = {
-        name: document.getElementById("albumNameFilter").value,
-        foundation: stringToDate(document.getElementById("albumReleaseFilter").value),
-        bandName: document.getElementById("bandNameFilter").value
+    var franchiseFilter = {
+        franchiseName: document.getElementById("franchiseNameFilter").value,
+        release: stringToDate(document.getElementById("franchiseReleaseFilter").value),
+        country: document.getElementById("franchiseCountryFilter").value
     };
 
     jQuery.ajax({
-        url: "albums?action=extendedsearch",
+        url: "franchises?action=extendedsearch",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify(albumFilter),
+        data: JSON.stringify(franchiseFilter),
 
         success: function (response) {
-            var albums = response;
-            refreshAlbums(albums);
+            var franchises = response;
+            refreshFranchises(franchises);
             redirecting('#close');
         },
 

@@ -68,10 +68,10 @@ public class FranchiseDao implements EntityDao<Franchise> {
         try {
             statement.executeUpdate("INSERT INTO country(country_name) values('" + franchise.getCountry() + "')");
         } catch (Exception e) { }
-        statement.executeUpdate("INSERT INTO franchise(franchise_name, country, release) SELECT '" +
+        statement.executeUpdate("INSERT INTO franchise(franchise_name, country_id, release) SELECT '" +
                 franchise.getFranchiseName() + "', country.country_id, " +
                 "to_date('" + franchise.dateToString() + "', 'yyyy-MM-dd')" +
-                " FROM country WHERE country_id='" + franchise.getCountry() + "'");
+                " FROM country WHERE country_name='" + franchise.getCountry() + "'");
     }
 
 
@@ -87,10 +87,10 @@ public class FranchiseDao implements EntityDao<Franchise> {
             statement.executeUpdate(sqlCountryRequest);
         } catch (Exception e) { }
         for (Franchise franchise : franchises) {
-            statement.executeUpdate("INSERT INTO franchise(franchise_name, country, release) SELECT '" +
+            statement.executeUpdate("INSERT INTO franchise(franchise_name, country_id, release) SELECT '" +
                     franchise.getFranchiseName() + "', country.country_id, " +
                     "to_date('" + franchise.dateToString() + "', 'yyyy-MM-dd')" +
-                    " FROM country WHERE country_id='" + franchise.getCountry() + "'");
+                    " FROM country WHERE country_name='" + franchise.getCountry() + "'");
         }
     }
 
@@ -100,8 +100,7 @@ public class FranchiseDao implements EntityDao<Franchise> {
 
     public void update(Franchise franchise) throws SQLException {
         try {
-            statement.executeUpdate("INSERT country(country_name) values(" +
-                    "country_name='" + franchise.getCountry() + "')");
+            statement.executeUpdate("INSERT INTO country(country_name) values('" + franchise.getCountry() + "')");
         } catch (Exception e) { }
         ResultSet set = statement.executeQuery("SELECT country_id FROM country WHERE country_name='" + franchise.getCountry() + "'");
         set.next();
