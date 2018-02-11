@@ -43,57 +43,54 @@ public class FranchiseDao implements EntityDao<Franchise> {
         franchises.clear();
         ResultSet set;
         set = statement.executeQuery("SELECT * FROM franchise " +
-                "FULL JOIN country ON country.country_id = franchise.country_id");
+                "JOIN country ON country.country_id = franchise.country_id");
         while (set.next())
             franchises.add(new Franchise(set.getInt("franchise_id"),
                     set.getString("franchise_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseFullDate(set.getString("release"))));
+                    EntityUtils.parseDate(set.getString("release"))));
         return franchises;
     }
 
     public Franchise get(int id) throws SQLException, ParseException {
         ResultSet set;
         set = statement.executeQuery("SELECT * FROM franchise " +
-                "FULL JOIN country ON country.country_id = franchise.country_id " +
+                "JOIN country ON country.country_id = franchise.country_id " +
                 "WHERE franchise_id=" + id);
         set.next();
         return new Franchise(set.getInt("franchise_id"),
                 set.getString("franchise_name"),
                 set.getString("country_name"),
-                EntityUtils.parseFullDate(set.getString("release")));
+                EntityUtils.parseDate(set.getString("release")));
     }
 
     public void add(Franchise franchise) throws SQLException {
         try {
             statement.executeUpdate("INSERT INTO country(country_name) values('" + franchise.getCountry() + "')");
-        } finally {
-            statement.executeUpdate("INSERT INTO franchise(franchise_name, country, release) values('" + franchise.getFranchiseName() +
-                    ", SELECT TOP 1 country_id FROM country WHERE country_id=" + franchise.getCountry() +
-                    "',to_date('" + franchise.dateToString() + "', 'yyyy-MM-dd'))");
-        }
+        } catch (Exception e) { }
+        statement.executeUpdate("INSERT INTO franchise(franchise_name, country, release) SELECT '" +
+                franchise.getFranchiseName() + "', country.country_id, " +
+                "to_date('" + franchise.dateToString() + "', 'yyyy-MM-dd')" +
+                " FROM country WHERE country_id='" + franchise.getCountry() + "'");
     }
 
+
     public void addAll(List<Franchise> franchises) throws SQLException {
-        String sqlRequest = "INSERT INTO franchise(franchise_name, country, release) values ";
         String sqlCountryRequest = "INSERT INTO country(country_name) values ";
         for (int i = 0, size = franchises.size(); i < size; i++) {
             Franchise franchise = franchises.get(i);
-
-            sqlRequest += "('" + franchise.getFranchiseName() +
-                    "', SELECT TOP 1 country_id FROM country WHERE country_id=" + franchise.getCountry() +
-                    "',to_date('" + franchise.dateToString() + "', 'yyyy-MM-dd'))";
-
             sqlCountryRequest += "('" + franchise.getCountry() + "')";
-            if (i != size - 1) {
-                sqlRequest += ",";
+            if (i != size - 1)
                 sqlCountryRequest += ",";
-            }
         }
         try {
             statement.executeUpdate(sqlCountryRequest);
-        } finally {
-            statement.executeUpdate(sqlRequest);
+        } catch (Exception e) { }
+        for (Franchise franchise : franchises) {
+            statement.executeUpdate("INSERT INTO franchise(franchise_name, country, release) SELECT '" +
+                    franchise.getFranchiseName() + "', country.country_id, " +
+                    "to_date('" + franchise.dateToString() + "', 'yyyy-MM-dd')" +
+                    " FROM country WHERE country_id='" + franchise.getCountry() + "'");
         }
     }
 
@@ -102,25 +99,32 @@ public class FranchiseDao implements EntityDao<Franchise> {
     }
 
     public void update(Franchise franchise) throws SQLException {
+        try {
+            statement.executeUpdate("INSERT country(country_name) values(" +
+                    "country_name='" + franchise.getCountry() + "')");
+        } catch (Exception e) { }
+        ResultSet set = statement.executeQuery("SELECT country_id FROM country WHERE country_name='" + franchise.getCountry() + "'");
+        set.next();
+        int countryId = set.getInt("country_id");
+
         statement.executeUpdate("UPDATE franchise " +
-                "FULL JOIN country ON country.country_id = franchise.country_id " +
                 "SET franchise_name='" + franchise.getFranchiseName() +
                 "', release=to_date('" + franchise.dateToString() + "', 'yyyy-MM-dd')" +
-                "', country_name='" + franchise.getCountry() +
-                "' WHERE franchise_id=" + franchise.getId());
+                ", country_id=" + countryId +
+                " WHERE franchise_id=" + franchise.getId());
     }
 
     public List<Franchise> getByName(String name) throws SQLException, ParseException {
         franchises.clear();
         ResultSet set;
         set = statement.executeQuery("SELECT * FROM franchise " +
-                "FULL JOIN country ON country.country_id = franchise.country_id WHERE " +
+                "JOIN country ON country.country_id = franchise.country_id WHERE " +
                 regexpLike("franchise.franchise_name", name));
         while (set.next())
             franchises.add(new Franchise(set.getInt("franchise_id"),
                     set.getString("franchise_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseFullDate(set.getString("release"))));
+                    EntityUtils.parseDate(set.getString("release"))));
         return franchises;
     }
 
@@ -128,8 +132,8 @@ public class FranchiseDao implements EntityDao<Franchise> {
         FranchiseFilter filter = (FranchiseFilter) entityFilter;
         franchises.clear();
         ResultSet set;
-        set = statement.executeQuery("SELECT * FROM franchise WHERE " +
-                "FULL JOIN country ON country.country_id = franchise.country_id WHERE " +
+        set = statement.executeQuery("SELECT * FROM franchise " +
+                "JOIN country ON country.country_id = franchise.country_id WHERE " +
                 (EntityUtils.formatTime(filter.getRelease()).equals("59:59") ? "" : "TO_CHAR(franchise.release,'yyyy-MM-dd') = '" + filter.dateToString() + "' AND ") +
                 regexpLike("franchise.franchise_name", filter.getName()) + " AND " +
                 regexpLike("country.country_name", filter.getCountry()));
@@ -137,7 +141,7 @@ public class FranchiseDao implements EntityDao<Franchise> {
             franchises.add(new Franchise(set.getInt("franchise_id"),
                     set.getString("franchise_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseFullDate(set.getString("release"))));
+                    EntityUtils.parseDate(set.getString("release"))));
         return franchises;
     }
 

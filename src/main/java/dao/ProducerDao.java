@@ -43,59 +43,55 @@ public class ProducerDao implements EntityDao<Producer> {
         producers.clear();
         ResultSet set;
         set = statement.executeQuery("SELECT * FROM producer " +
-                "FULL JOIN country citizenship ON citizenship.country_id = producer.citizenship_id");
+                "JOIN country citizenship ON citizenship.country_id = producer.citizenship_id");
         while (set.next())
             producers.add(new Producer(set.getInt("producer_id"),
                     set.getString("producer_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseFullDate(set.getString("birthdate"))));
+                    EntityUtils.parseDate(set.getString("birthdate"))));
         return producers;
     }
 
     public Producer get(int id) throws SQLException, ParseException {
         ResultSet set;
         set = statement.executeQuery("SELECT * FROM producer " +
-                "FULL JOIN country citizenship ON citizenship.country_id = producer.citizenship_id " +
+                "JOIN country citizenship ON citizenship.country_id = producer.citizenship_id " +
                 "WHERE producer_id=" + id);
         set.next();
         return new Producer(set.getInt("producer_id"),
                 set.getString("producer_name"),
                 set.getString("country_name"),
-                EntityUtils.parseFullDate(set.getString("birthdate")));
+                EntityUtils.parseDate(set.getString("birthdate")));
     }
 
     public void add(Producer producer) throws SQLException {
         try {
             statement.executeUpdate("INSERT INTO country(country_name) values('" + producer.getCitizenship() + "')");
         }
-        finally {
-            statement.executeUpdate("INSERT INTO producer(producer_name, citizenship, birthdate) values('" + producer.getProducerName() +
-                    ", SELECT TOP 1 country_id FROM country WHERE country_id=" + producer.getCitizenship() +
-                    "',to_date('" + producer.dateToString() + "', 'yyyy-MM-dd'))");
-        }
+        catch (Exception e){ }
+
+        statement.executeUpdate("INSERT INTO producer(producer_name, citizenship_id, birthdate) SELECT '" +
+                producer.getProducerName() + "', country.country_id, " +
+                "to_date('" + producer.dateToString() + "', 'yyyy-MM-dd')" +
+                " FROM country WHERE country_name='" + producer.getCitizenship() + "'");
     }
 
     public void addAll(List<Producer> producers) throws SQLException {
-        String sqlRequest = "INSERT INTO producer(producer_name, citizenship, birthdate) values ";
         String sqlCountryRequest = "INSERT INTO country(country_name) values ";
         for (int i = 0, size = producers.size(); i < size; i++) {
             Producer producer = producers.get(i);
-
-            sqlRequest += "('" + producer.getProducerName() +
-                    "', SELECT TOP 1 country_id FROM country WHERE country_id=" + producer.getCitizenship() +
-                    "',to_date('" + producer.dateToString() + "', 'yyyy-MM-dd'))";
-
             sqlCountryRequest += "('" + producer.getCitizenship() + "')";
-            if (i != size - 1) {
-                sqlRequest += ",";
+            if (i != size - 1)
                 sqlCountryRequest += ",";
-            }
         }
         try {
             statement.executeUpdate(sqlCountryRequest);
-        }
-        finally {
-            statement.executeUpdate(sqlRequest);
+        } catch (Exception e) { }
+        for (Producer producer : producers) {
+            statement.executeUpdate("INSERT INTO producer(producer_name, citizenship_id, birthdate) SELECT '" +
+                    producer.getProducerName() + "', country.country_id, " +
+                    "to_date('" + producer.dateToString() + "', 'yyyy-MM-dd'))" +
+                    " FROM country WHERE country_name='" + producer.getCitizenship() + "'");
         }
     }
 
@@ -104,25 +100,32 @@ public class ProducerDao implements EntityDao<Producer> {
     }
 
     public void update(Producer producer) throws SQLException {
+        try {
+            statement.executeUpdate("INSERT country(country_name) values(" +
+                    "country_name='" + producer.getCitizenship() + "')");
+        } catch (Exception e) { }
+        ResultSet set = statement.executeQuery("SELECT country_id FROM country WHERE country_name='" + producer.getCitizenship() + "'");
+        set.next();
+        int countryId = set.getInt("country_id");
+
         statement.executeUpdate("UPDATE producer " +
-                "FULL JOIN country citizenship ON citizenship.country_id = producer.citizenship_id " +
                 "SET producer_name='" + producer.getProducerName() +
                 "', birthdate=to_date('" + producer.dateToString() + "', 'yyyy-MM-dd')" +
-                "', country_name='" + producer.getCitizenship() +
-                "' WHERE producer_id=" + producer.getId());
+                ", citizenship_id=" + countryId +
+                " WHERE producer_id=" + producer.getId());
     }
 
     public List<Producer> getByName(String name) throws SQLException, ParseException {
         producers.clear();
         ResultSet set;
         set = statement.executeQuery("SELECT * FROM producer " +
-                "FULL JOIN country citizenship ON citizenship.country_id = producer.citizenship_id WHERE " +
+                "JOIN country citizenship ON citizenship.country_id = producer.citizenship_id WHERE " +
                 regexpLike("producer.producer_name", name));
         while (set.next())
             producers.add(new Producer(set.getInt("producer_id"),
                     set.getString("producer_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseFullDate(set.getString("birthdate"))));
+                    EntityUtils.parseDate(set.getString("birthdate"))));
         return producers;
     }
 
@@ -130,8 +133,8 @@ public class ProducerDao implements EntityDao<Producer> {
         ProducerFilter filter = (ProducerFilter) entityFilter;
         producers.clear();
         ResultSet set;
-        set = statement.executeQuery("SELECT * FROM producer WHERE " +
-                "FULL JOIN country citizenship ON citizenship.country_id = producer.citizenship_id WHERE " +
+        set = statement.executeQuery("SELECT * FROM producer " +
+                "JOIN country citizenship ON citizenship.country_id = producer.citizenship_id WHERE " +
                 (EntityUtils.formatTime(filter.getBirthdate()).equals("59:59") ? "" : "TO_CHAR(producer.birthdate,'yyyy-MM-dd') = '" + filter.dateToString() + "' AND ") +
                 regexpLike("producer.producer_name", filter.getName()) + " AND " +
                 regexpLike("citizenship.country_name", filter.getCitizenship()));
@@ -139,7 +142,7 @@ public class ProducerDao implements EntityDao<Producer> {
             producers.add(new Producer(set.getInt("producer_id"),
                     set.getString("producer_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseFullDate(set.getString("birthdate"))));
+                    EntityUtils.parseDate(set.getString("birthdate"))));
         return producers;
     }
 

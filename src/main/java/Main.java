@@ -70,7 +70,7 @@ public class Main {
 
         //ms.addProducers(s);
         //ms.removeProducer(1);
-        //ms.searchBands("Ivan");
+        //ms.searchProducers("Ivan");
         //String first = ms.getAllBands();
         //String first = ms.getBand(2);
         //EntityUtils.deserializeList(first,Producer.class);
@@ -80,7 +80,7 @@ public class Main {
             System.out.println(printElem.getSelectedName());
         }*/
         //ms.removeAllBands();
-        /*List<Entity> second = ms.searchBands("Ivan");
+        /*List<Entity> second = ms.searchProducers("Ivan");
         for (Entity elem : second) {
             Producer printElem = (Producer)elem;
             System.out.println(printElem.getSelectedName());

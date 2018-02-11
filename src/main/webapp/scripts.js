@@ -111,7 +111,7 @@ function stringToDate(date) {
     if (date === "") return "Jan 1, 0001 00:59:59 AM";
 
     var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    var values = date.value.split("-");
+    var values = date.split("-");
     var day = Number(values[2]);
     var monthIndex = Number(values[1]) - 1;
     var month = months[monthIndex];
@@ -390,18 +390,18 @@ function extendedSearchSongs() {
     });
 }
 
-//===========================BAND=============================//
-function searchBands() {
+//===========================PRODUCER=============================//
+function searchProducers() {
     var data = document.getElementById("search_string").value;
     jQuery.ajax({
-        url: "bands?action=search",
+        url: "producers?action=search",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(data),
 
         success: function(response) {
-            var bands = response;
-            refreshBands(bands);
+            var producers = response;
+            refreshProducers(producers);
         },
 
         error: function(response) {
@@ -410,64 +410,65 @@ function searchBands() {
     });
 }
 
-function refreshBands(bands) {
+function refreshProducers(producers) {
     var elems = document.getElementsByClassName("rectangle");
     var count = elems.length - 1;
     for(var i = count; i >= 0; i--){
         elems[i].parentNode.removeChild(elems[i]);
     }
     var mainElem = document.getElementById("main");
-    for(var i = bands.length - 1; i >= 0; i--){
+    for(var i = producers.length - 1; i >= 0; i--){
         var div = document.createElement("div");
+        div.setAttribute("id", producers[i].producerId);
         div.setAttribute("class", "rectangle");
-        div.setAttribute("id", bands[i].id);
         var first = mainElem.childNodes[0];
         mainElem.insertBefore(div, first);
 
         var subDiv = document.createElement("div");
         subDiv.setAttribute("class", "data-element");
-        subDiv.setAttribute("onclick", "openSelectedBand('#openInfo','" + bands[i].id + "')");
+        subDiv.setAttribute("onclick", "openSelectedProducer('#openInfo','" + producers[i].producerId + "')");
         div.appendChild(subDiv);
 
         var index = document.createElement("div");
         index.setAttribute("class", "data-index");
-        index.innerHTML = bands[i].id;
+        index.innerHTML = producers[i].producerId;
         subDiv.appendChild(index);
 
         var name = document.createElement("div");
         name.setAttribute("class", "data-name");
         name.setAttribute("style", "width: 75%;");
-        name.innerHTML = bands[i].name;
+        name.innerHTML = producers[i].producerName;
         subDiv.appendChild(name);
 
         var release = document.createElement("div");
         release.setAttribute("class", "data-time");
         release.setAttribute("style", "width: 15%;");
-        release.innerHTML = rectangleClassDateToString(bands[i].foundation);
+        release.innerHTML = rectangleClassDateToString(producers[i].birthdate);
         subDiv.appendChild(release);
 
         var subButton = document.createElement("div");
         subButton.setAttribute("class", "data-delete");
-        subButton.setAttribute("onclick", "deleteBand('" + bands[i].id + "')");
+        subButton.setAttribute("onclick", "deleteProducer('" + producers[i].producerId + "')");
         div.appendChild(subButton);
     }
 }
 
-function extendedSearchBands() {
-    var bandFilter = {
-        name: document.getElementById("bandNameFilter").value,
-        foundation: stringToDate(document.getElementById("bandFoundationFilter").value)
+function extendedSearchProducers() {
+    var producerFilter = {
+        producerName: document.getElementById("producerNameFilter").value,
+        birthdate: stringToDate(document.getElementById("producerBirthdateFilter").value),
+        citizenship: document.getElementById("producerCitizenshipFilter").value
     };
 
     jQuery.ajax({
-        url: "bands?action=extendedsearch",
+        url: "producers?action=extendedsearch",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify(bandFilter),
+        data: JSON.stringify(producerFilter),
 
         success: function (response) {
-            var bands = response;
-            refreshBands(bands);
+            var producers = response;
+            refreshProducers(producers);
             redirecting('#close');
         },
 
@@ -477,22 +478,23 @@ function extendedSearchBands() {
     });
 }
 
-function addBand(){
-    var band = {
-        id: 0,
-        name: document.getElementById("addBandName").value,
-        foundation: stringToDate(document.getElementById("addBandFoundation").value)
+function addProducer(){
+    var producer = {
+        producerId: 0,
+        producerName: document.getElementById("addProducerName").value,
+        birthdate: stringToDate(document.getElementById("addProducerBirthdate").value),
+        citizenship: document.getElementById("addProducerCitizenship").value
     };
 
     jQuery.ajax({
-        url: "bands?action=put",
+        url: "producers?action=put",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify(band),
+        data: JSON.stringify(producer),
 
         success: function (response) {
             redirecting('#close');
-            searchBands();
+            searchProducers();
         },
 
         error: function (response) {
@@ -501,9 +503,9 @@ function addBand(){
     });
 }
 
-function deleteBand(id) {
+function deleteProducer(id) {
     jQuery.ajax({
-        url: "bands?action=delete",
+        url: "producers?action=delete",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(id),
@@ -519,24 +521,26 @@ function deleteBand(id) {
     });
 }
 
-function clearInfoBand() {
-    document.getElementById("selectedBandName").value = "";
-    document.getElementById("selectedBandFoundation").value = "";
+function clearInfoProducer() {
+    document.getElementById("selectedProducerName").value = "";
+    document.getElementById("selectedProducerBirthdate").value = "";
+    document.getElementById("selectedProducerCitizenship").value = "";
 }
 
-function openSelectedBand(path, bandId) {
+function openSelectedProducer(path, producerId) {
     window.location.href = path;
-    document.getElementById("selectedBandId").value = bandId;
-    clearInfoBand();
+    document.getElementById("selectedProducerId").value = producerId;
+    clearInfoProducer();
 
     jQuery.ajax({
-        url: "bands?id=" + bandId,
+        url: "producers?id=" + producerId,
         type: "GET",
 
         success: function (response) {
-            var band = response;
-            document.getElementById("selectedBandName").value = band.name;
-            document.getElementById("selectedBandFoundation").value = dateToString(band.foundation);
+            var producer = response;
+            document.getElementById("selectedProducerName").value = producer.producerName;
+            document.getElementById("selectedProducerBirthdate").value = dateToString(producer.birthdate);
+            document.getElementById("selectedProducerCitizenship").value = producer.citizenship;
         },
 
         error: function (response) {
@@ -545,22 +549,23 @@ function openSelectedBand(path, bandId) {
     });
 }
 
-function updateBand(){
-    var band = {
-        id: document.getElementById("selectedBandId").value,
-        name: document.getElementById("selectedBandName").value,
-        foundation: stringToDate(document.getElementById("selectedBandFoundation").value)
+function updateProducer(){
+    var producer = {
+        producerId: document.getElementById("selectedProducerId").value,
+        producerName: document.getElementById("selectedProducerName").value,
+        birthdate: stringToDate(document.getElementById("selectedProducerBirthdate").value),
+        citizenship: document.getElementById("selectedProducerCitizenship").value
     };
 
     jQuery.ajax({
-        url: "bands?action=update",
+        url: "producers?action=update",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify(band),
+        data: JSON.stringify(producer),
 
         success: function (response) {
             redirecting('#close');
-            searchBands();
+            searchProducers();
         },
 
         error: function (response) {
