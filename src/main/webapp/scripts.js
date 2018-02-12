@@ -1,8 +1,8 @@
 $(function() {
-    $.mask.definitions['h']='[0-5]';
-    $("#songTimeFilter").mask("h9:h9", {placeholder: "мм:сс" });
-    $("#addSongTime").mask("h9:h9", {placeholder: "мм:сс" });
-    $("#selectedSongTime").mask("h9:h9", {placeholder: "мм:сс" });
+    $.mask.definitions['s']='[0-5]';
+    $("#filmTimeFilter").mask("9:s9:s9", {placeholder: "ч:мм:сс" });
+    $("#addFilmTime").mask("9:s9:s9", {placeholder: "ч:мм:сс" });
+    $("#selectedFilmTime").mask("9:s9:s9", {placeholder: "ч:мм:сс" });
 });
 
 function redirecting(path) {
@@ -121,21 +121,26 @@ function stringToDate(date) {
 
 function timeToString(time) {
     var twoNumberInDay = (time.substring(5, 6) === ",") ? 0 : 1;
-    return time.substring(15 + twoNumberInDay, 20 + twoNumberInDay);
+    time = time.substring(12 + twoNumberInDay, 20 + twoNumberInDay);
+    var values = time.split(":");
+    var hh = (values[0] == 12 ? 0 : values[0]);
+    var mm = values[1];
+    var ss = values[2];
+    return hh + ":" + mm + ":" + ss;
 }
 
-//===========================SONG=============================//
-function searchSongs() {
+//===========================FILM=============================//
+function searchFilms() {
     var data = document.getElementById("search_string").value;
     jQuery.ajax({
-        url: "songs?action=search",
+        url: "films?action=search",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(data),
 
         success: function(response) {
-            var songs = response;
-            refreshSongs(songs);
+            var films = response;
+            refreshFilms(films);
         },
 
         error: function(response) {
@@ -144,50 +149,50 @@ function searchSongs() {
     });
 }
 
-function refreshSongs(songs) {
+function refreshFilms(films) {
     var elems = document.getElementsByClassName("rectangle");
     var count = elems.length - 1;
     for(var i = count; i >= 0; i--){
         elems[i].parentNode.removeChild(elems[i]);
     }
     var mainElem = document.getElementById("main");
-    for(var i = songs.length - 1; i >= 0; i--){
+    for(var i = films.length - 1; i >= 0; i--){
         var div = document.createElement("div");
         div.setAttribute("class", "rectangle");
-        div.setAttribute("id", songs[i].id);
+        div.setAttribute("id", films[i].filmId);
         var first = mainElem.childNodes[0];
         mainElem.insertBefore(div, first);
 
         var subDiv = document.createElement("div");
         subDiv.setAttribute("class", "data-element");
-        subDiv.setAttribute("onclick", "openSelectedSong('#openInfo','" + songs[i].id + "')");
+        subDiv.setAttribute("onclick", "openSelectedFilm('#openInfo','" + films[i].filmId + "')");
         div.appendChild(subDiv);
 
         var index = document.createElement("div");
         index.setAttribute("class", "data-index");
-        index.innerHTML = songs[i].id;
+        index.innerHTML = films[i].filmId;
         subDiv.appendChild(index);
 
         var name = document.createElement("div");
         name.setAttribute("class", "data-name");
-        name.innerHTML = songs[i].name;
+        name.innerHTML = films[i].filmName;
         subDiv.appendChild(name);
 
         var time = document.createElement("div");
         time.setAttribute("class", "data-time");
-        time.innerHTML = timeToString(songs[i].time);
+        time.innerHTML = timeToString(films[i].duration);
         subDiv.appendChild(time);
 
         var subButton = document.createElement("div");
         subButton.setAttribute("class", "data-delete");
-        subButton.setAttribute("onclick", "deleteSong('" + songs[i].id + "')");
+        subButton.setAttribute("onclick", "deleteFilm('" + films[i].filmId + "')");
         div.appendChild(subButton);
     }
 }
 
-function deleteSong(id) {
+function deleteFilm(id) {
     jQuery.ajax({
-        url: "songs?action=delete",
+        url: "films?action=delete",
         type: "POST",
         contentType: "application/json",
         data: JSON.stringify(id),
@@ -203,54 +208,54 @@ function deleteSong(id) {
     });
 }
 
-function clearInfoSong() {
-    document.getElementById("selectedSongName").value = "";
-    document.getElementById("selectedSongTime").value = "";
-    document.getElementById("selectedBandId").value = "";
+function clearInfoFilm() {
+    document.getElementById("selectedFilmName").value = "";
+    document.getElementById("selectedFilmTime").value = "";
+    document.getElementById("selectedProducerId").value = "";
     document.getElementById("selectedGenreId").value = "";
-    document.getElementById("selectedAlbumId").value = "";
-    document.getElementById("selectedBandName").value = "";
+    document.getElementById("selectedFranchiseId").value = "";
+    document.getElementById("selectedProducerName").value = "";
     document.getElementById("selectedGenreName").value = "";
-    document.getElementById("selectedAlbumName").value = "";
+    document.getElementById("selectedFranchiseName").value = "";
 }
 
-function openSelectedSong(path, songId) {
+function openSelectedFilm(path, filmId) {
     window.location.href = path;
-    document.getElementById("selectedSongId").value = songId;
-    clearInfoSong();
+    document.getElementById("selectedFilmId").value = filmId;
+    clearInfoFilm();
 
     jQuery.ajax({
-        url: "songs?id=" + songId,
+        url: "films?id=" + filmId,
         type: "GET",
 
         success: function (response) {
-            var song = response;
-            if (song.bandId !== 0) {
-                getAsyncBand(song.bandId);
-                document.getElementById("selectedBandId").value = song.bandId;
-                hideElement("bandRedirect", false);
+            var film = response;
+            if (film.producerId !== 0) {
+                getAsyncProducer(film.producerId);
+                document.getElementById("selectedProducerId").value = film.producerId;
+                hideElement("producerRedirect", false);
             }
             else {
-                hideElement("bandRedirect", true);
+                hideElement("producerRedirect", true);
             }
-            if (song.genreId !== 0) {
-                getAsyncGenre(song.genreId);
-                document.getElementById("selectedGenreId").value = song.genreId;
+            if (film.genreId !== 0) {
+                getAsyncGenre(film.genreId);
+                document.getElementById("selectedGenreId").value = film.genreId;
                 hideElement("genreRedirect", false);
             }
             else {
-                hideElement("genreRedirect", false);
+                hideElement("genreRedirect", true);
             }
-            if (song.albumId !== 0) {
-                getAsyncAlbum(song.albumId);
-                document.getElementById("selectedAlbumId").value = song.albumId;
-                hideElement("albumRedirect", false);
+            if (film.franchiseId !== 0) {
+                getAsyncFranchise(film.franchiseId);
+                document.getElementById("selectedFranchiseId").value = film.franchiseId;
+                hideElement("franchiseRedirect", false);
             }
             else {
-                hideElement("albumRedirect", false);
+                hideElement("franchiseRedirect", true);
             }
-            document.getElementById("selectedSongName").value = song.name;
-            document.getElementById("selectedSongTime").value = timeToString(song.time);
+            document.getElementById("selectedFilmName").value = film.filmName;
+            document.getElementById("selectedFilmTime").value = timeToString(film.duration);
         },
 
         error: function (response) {
@@ -259,14 +264,14 @@ function openSelectedSong(path, songId) {
     });
 }
 
-function getAsyncBand(id) {
+function getAsyncProducer(id) {
     jQuery.ajax({
-        url: "bands?id=" + id,
+        url: "producers?id=" + id,
         type: "GET",
 
         success: function (response) {
-            var band = response;
-            document.getElementById("selectedBandName").value = band.name;
+            var producer = response;
+            document.getElementById("selectedProducerName").value = producer.producerName;
         },
 
         error: function (response) {
@@ -282,7 +287,7 @@ function getAsyncGenre(id) {
 
         success: function (response) {
             var genre = response;
-            document.getElementById("selectedGenreName").value = genre.name;
+            document.getElementById("selectedGenreName").value = genre.genreName;
         },
 
         error: function (response) {
@@ -291,14 +296,14 @@ function getAsyncGenre(id) {
     });
 }
 
-function getAsyncAlbum(id) {
+function getAsyncFranchise(id) {
     jQuery.ajax({
-        url: "albums?id=" + id,
+        url: "franchises?id=" + id,
         type: "GET",
 
         success: function (response) {
-            var album = response;
-            document.getElementById("selectedAlbumName").value = album.name;
+            var franchise = response;
+            document.getElementById("selectedFranchiseName").value = franchise.franchiseName;
         },
 
         error: function (response) {
@@ -307,25 +312,25 @@ function getAsyncAlbum(id) {
     });
 }
 
-function addSong(){
-    var song = {
-        id: 0,
-        name: document.getElementById("addSongName").value,
-        time: "Jan 1, 2018 12:" + document.getElementById("addSongTime").value + " AM",
-        bandId: document.getElementById("addBandId").value,
-        albumId: document.getElementById("addGenreId").value,
-        genreId: document.getElementById("addAlbumId").value
+function addFilm(){
+    var film = {
+        filmId: 0,
+        filmName: document.getElementById("addFilmName").value,
+        duration: "Jan 1, 2018 " + document.getElementById("addFilmTime").value + " AM",
+        producerId: document.getElementById("addProducerId").value,
+        franchiseId: document.getElementById("addFranchiseId").value,
+        genreId: document.getElementById("addGenreId").value
     };
 
     jQuery.ajax({
-        url: "songs?action=put",
+        url: "films?action=put",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify(song),
+        data: JSON.stringify(film),
 
         success: function (response) {
             redirecting('#close');
-            searchSongs();
+            searchFilms();
         },
 
         error: function (response) {
@@ -334,25 +339,25 @@ function addSong(){
     });
 }
 
-function updateSong(){
-    var song = {
-        id: document.getElementById("selectedSongId").value,
-        name: document.getElementById("selectedSongName").value,
-        time: "Jan 1, 2018 12:" + document.getElementById("selectedSongTime").value + " AM",
-        bandId: document.getElementById("selectedBandId").value,
-        albumId: document.getElementById("selectedGenreId").value,
-        genreId: document.getElementById("selectedAlbumId").value
+function updateFilm(){
+    var film = {
+        filmId: document.getElementById("selectedFilmId").value,
+        filmName: document.getElementById("selectedFilmName").value,
+        duration: "Jan 1, 2018 " + document.getElementById("selectedFilmTime").value + " AM",
+        producerId: document.getElementById("selectedProducerId").value,
+        genreId: document.getElementById("selectedGenreId").value,
+        franchiseId: document.getElementById("selectedFranchiseId").value
     };
 
     jQuery.ajax({
-        url: "songs?action=update",
+        url: "films?action=update",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify(song),
+        data: JSON.stringify(film),
 
         success: function (response) {
             redirecting('#close');
-            searchSongs();
+            searchFilms();
         },
 
         error: function (response) {
@@ -361,26 +366,26 @@ function updateSong(){
     });
 }
 
-function extendedSearchSongs() {
-    var time = document.getElementById("songTimeFilter").value;
-    if (time == "") time = "00:00";
-    var songFilter = {
-        name: document.getElementById("songNameFilter").value,
-        time: "Jan 1, 2018 12:" + time + " AM",
-        bandName: document.getElementById("bandNameFilter").value,
-        albumName: document.getElementById("genreNameFilter").value,
-        genreName: document.getElementById("albumNameFilter").value
+function extendedSearchFilms() {
+    var time = document.getElementById("filmTimeFilter").value;
+    if (time == "") time = "11:00:00";
+    var filmFilter = {
+        filmName: document.getElementById("filmNameFilter").value,
+        duration: "Jan 1, 2018 12:" + time + " AM",
+        producerName: document.getElementById("producerNameFilter").value,
+        genreName: document.getElementById("genreNameFilter").value,
+        franchiseName: document.getElementById("franchiseNameFilter").value
     };
 
     jQuery.ajax({
-        url: "songs?action=extendedsearch",
+        url: "films?action=extendedsearch",
         type: "POST",
         contentType: "application/json",
-        data: JSON.stringify(songFilter),
+        data: JSON.stringify(filmFilter),
 
         success: function (response) {
-            var songs = response;
-            refreshSongs(songs);
+            var films = response;
+            refreshFilms(films);
             redirecting('#close');
         },
 
@@ -390,6 +395,19 @@ function extendedSearchSongs() {
     });
 }
 
+function hideEmptyRedirects() {
+    var franchiseId = document.getElementById("selectedFranchiseId").value;
+    if (franchiseId > 0) hideElement("franchiseRedirect", false);
+    else hideElement("franchiseRedirect", true);
+
+    var producerId = document.getElementById("selectedProducerId").value;
+    if (producerId > 0) hideElement("producerRedirect", false);
+    else hideElement("producerRedirect", true);
+
+    var genreId = document.getElementById("selectedGenreId").value;
+    if (genreId > 0) hideElement("genreRedirect", false);
+    else hideElement("genreRedirect", true);
+}
 //===========================PRODUCER=============================//
 function searchProducers() {
     var data = document.getElementById("search_string").value;
@@ -960,4 +978,11 @@ function extendedSearchGenres() {
             alert(response.responseText);
         }
     });
+}
+
+function hideEmptyParentGenreAndShowCovers() {
+    randomCover();
+    var parentId = document.getElementById("selectedParentId").value;
+    if (parentId > 0) hideElement("parentRedirect", false);
+    else hideElement("parentRedirect", true);
 }

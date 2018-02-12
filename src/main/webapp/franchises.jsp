@@ -8,7 +8,7 @@
 
 <html>
 <head>
-    <title>Альбомы</title>
+    <title>Франшизы</title>
 </head>
 
 <body class="blue-grad" onload="randomCover()">

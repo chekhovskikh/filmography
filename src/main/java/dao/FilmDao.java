@@ -46,7 +46,7 @@ public class FilmDao implements EntityDao<Film> {
         while (set.next())
             films.add(new Film(set.getInt("film_id"),
                     set.getString("film_name"),
-                    EntityUtils.parseFullDate(set.getString("duration")),
+                    EntityUtils.parseTime(set.getString("duration")),
                     set.getInt("producer_id"),
                     set.getInt("franchise_id"),
                     set.getInt("genre_id")));
@@ -55,11 +55,11 @@ public class FilmDao implements EntityDao<Film> {
 
     public Film get(int id) throws SQLException, ParseException {
         ResultSet set;
-        set = statement.executeQuery("SELECT * FROM film WHERE id=" + id);
+        set = statement.executeQuery("SELECT * FROM film WHERE film_id=" + id);
         set.next();
         return new Film(set.getInt("film_id"),
                 set.getString("film_name"),
-                EntityUtils.parseFullDate(set.getString("duration")),
+                EntityUtils.parseTime(set.getString("duration")),
                 set.getInt("producer_id"),
                 set.getInt("franchise_id"),
                 set.getInt("genre_id"));
@@ -67,10 +67,10 @@ public class FilmDao implements EntityDao<Film> {
 
     public void add(Film film) throws SQLException {
         statement.executeUpdate("INSERT INTO film(film_name,duration,genre_id,producer_id,franchise_id) values('" + film.getFilmName() +
-                "',to_date('" + film.timeToString() + "', 'MI:SS')," +
+                "',to_timestamp('" + film.timeToString() + "', 'HH24:MI:SS')," +
                 (film.getGenreId() == 0 ? "null" : film.getGenreId()) + "," +
                 film.getProducerId()+ "," +
-                (film.getFranchiseId() == 0 ? "null" : film.getFranchiseId()));
+                (film.getFranchiseId() == 0 ? "null" : film.getFranchiseId()) + ")");
     }
 
     public void addAll(List<Film> films) throws SQLException {
@@ -78,10 +78,10 @@ public class FilmDao implements EntityDao<Film> {
         for (int i = 0, size = films.size(); i < size; i++) {
             Film film = films.get(i);
             sqlRequest += "('" + film.getFilmName() +
-                    "',to_date('" + film.timeToString() + "', 'MI:SS')," +
+                    "',to_timestamp('" + film.timeToString() + "', 'HH24:MI:SS')," +
                     (film.getGenreId() == 0 ? "null" : film.getGenreId()) + "," +
                     film.getProducerId()+ "," +
-                    (film.getFranchiseId() == 0 ? "null" : film.getFranchiseId());
+                    (film.getFranchiseId() == 0 ? "null" : film.getFranchiseId()) + ")";
             if (i != size - 1)
                 sqlRequest += ",";
         }
@@ -95,11 +95,11 @@ public class FilmDao implements EntityDao<Film> {
     public void update(Film film) throws SQLException {
         statement.executeUpdate("UPDATE film " +
                 "SET film_name='" + film.getFilmName() +
-                "', duration=to_date('" + film.timeToString() + "', 'MI:SS')" +
+                "', duration=to_timestamp('" + film.timeToString() + "', 'HH24:MI:SS')" +
                 ", genre_id=" + (film.getGenreId() == 0 ? "null" : film.getGenreId()) +
                 ", producer_id=" + film.getProducerId() +
                 ", franchise_id=" + (film.getFranchiseId() == 0 ? "null" : film.getFranchiseId()) +
-                " WHERE film_id=" + film.getGenreId());
+                " WHERE film_id=" + film.getId());
     }
 
     public List<Film> getByName(String name) throws SQLException, ParseException {
@@ -109,7 +109,7 @@ public class FilmDao implements EntityDao<Film> {
         while (set.next())
             films.add(new Film(set.getInt("film_id"),
                     set.getString("film_name"),
-                    EntityUtils.parseFullDate(set.getString("duration")),
+                    EntityUtils.parseTime(set.getString("duration")),
                     set.getInt("producer_id"),
                     set.getInt("franchise_id"),
                     set.getInt("genre_id")));
@@ -124,15 +124,15 @@ public class FilmDao implements EntityDao<Film> {
                 "LEFT OUTER JOIN producer ON film.producer_id = producer.producer_id " +
                 "LEFT OUTER JOIN genre ON film.genre_id = genre.genre_id " +
                 "LEFT OUTER JOIN franchise ON film.franchise_id = franchise.franchise_id WHERE " +
-                (filter.timeToString().equals("00:00") ? "" : "TO_CHAR(film.duration,'MI:SS') = '" + filter.timeToString() + "' AND ") +
-                regexpLike("film.film_name", filter.getGenreName()) + " AND " +
+                (filter.timeToString().equals("11:00:00") ? "" : "TO_CHAR(film.duration,'HH24:MI:SS') = '" + filter.timeToString() + "' AND ") +
+                regexpLike("film.film_name", filter.getName()) + " AND " +
                 regexpLike("producer.producer_name", filter.getProducerName()) + " AND " +
                 regexpLike("genre.genre_name", filter.getGenreName()) + " AND " +
                 regexpLike("franchise.franchise_name", filter.getFranchiseName()));
         while (set.next())
             films.add(new Film(set.getInt("film_id"),
                     set.getString("film_name"),
-                    EntityUtils.parseFullDate(set.getString("duration")),
+                    EntityUtils.parseTime(set.getString("duration")),
                     set.getInt("producer_id"),
                     set.getInt("franchise_id"),
                     set.getInt("genre_id")));

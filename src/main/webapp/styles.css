@@ -157,7 +157,7 @@ div.data-index {
 
 div.data-name {
     float: left;
-    width: 83%;
+    width: 80%;
     height: 45px;
     padding-top: 15px;
     margin-left: 3%;
@@ -167,7 +167,7 @@ div.data-name {
 
 div.data-time {
     float: left;
-    width: 7%;
+    width: 10%;
     padding-top: 15px;
     height: 45px;
     color: gray;
@@ -565,8 +565,9 @@ body.loaded div.loader {
 
 
 div.btn-circle {
-    width: 500px;
+    width: 200px;
     padding-top: 20px;
+    padding-left: 150px;
     text-align: center;
     font-size: 30px;
     color: #80629f;
@@ -576,7 +577,7 @@ div.btn-circle {
 
 div.btn-circle > span {
     position: absolute;
-    margin-left: 230px;
+    margin-left: 100px;
     margin-top: -50px;
     display: block;
     width: 0;

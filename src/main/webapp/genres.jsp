@@ -11,7 +11,7 @@
     <title>Жанры</title>
 </head>
 
-<body class="blue-grad" onload="randomCover()">
+<body class="blue-grad" onload="hideEmptyParentGenreAndShowCovers()">
 <div class="border">
     <ul class="navigation-bar">
         <li class="navigation-bar" onclick="redirecting('/index.jsp')">Главная</li>
@@ -98,7 +98,7 @@
                         <td class="info-name">Название:</td>
                         <td colspan="3"><input id="selectedGenreName" class="info-value" value="${selectedGenre.genreName}"></td>
                     </tr>
-                    <tr>
+                    <tr onload="hideEmptyParentGenre()">
                         <td class="info-name">Наджанр:</td>
                         <td><input id="selectedParentId" class="info-value" onchange="getSelectedName('parentRedirect', 'selectedParentId', 'selectedParentName', 'genres')" style="width: 30px" value="${selectedGenre.parentId}"></td>
                         <td><input id="selectedParentName" readonly class="info-value-readonly" style="width: 120px" value="${parentName}"/></td>

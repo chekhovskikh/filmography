@@ -65,7 +65,7 @@ public class Main {
         /*
         System.out.println("-----------------------------");
         String name = "my";
-        songs = ms.searchSongs(name);
+        songs = ms.searchFilms(name);
         System.out.println(songs);*/
 
         //ms.addProducers(s);
