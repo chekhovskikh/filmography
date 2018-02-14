@@ -371,7 +371,7 @@ function extendedSearchFilms() {
     if (time == "") time = "11:00:00";
     var filmFilter = {
         filmName: document.getElementById("filmNameFilter").value,
-        duration: "Jan 1, 2018 12:" + time + " AM",
+        duration: "Jan 1, 2018 " + time + " AM",
         producerName: document.getElementById("producerNameFilter").value,
         genreName: document.getElementById("genreNameFilter").value,
         franchiseName: document.getElementById("franchiseNameFilter").value

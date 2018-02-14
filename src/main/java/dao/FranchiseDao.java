@@ -1,16 +1,13 @@
 package dao;
 
 import entitiy.Franchise;
-import util.dbdrivers.DbManager;
+import util.dbdriver.DbManager;
 import entitiy.filter.FranchiseFilter;
 import entitiy.filter.EntityFilter;
 import util.EntityUtils;
-import util.dbdrivers.PostgresManager;
+import util.dbdriver.PostgresManager;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +15,6 @@ import java.util.Properties;
 
 public class FranchiseDao implements EntityDao<Franchise> {
     private Connection connection;
-    private Statement statement;
-    private List<Franchise> franchises;
 
     public FranchiseDao(Properties properties) throws SQLException {
         String username = properties.getProperty("username");
@@ -30,8 +25,6 @@ public class FranchiseDao implements EntityDao<Franchise> {
 
         DbManager manager = new PostgresManager(username, password);
         connection = manager.connect(host, port, sid);
-        statement = connection.createStatement();
-        franchises = new ArrayList<>();
     }
 
     public void closeConnection() throws SQLException {
@@ -40,10 +33,9 @@ public class FranchiseDao implements EntityDao<Franchise> {
     }
 
     public List<Franchise> getAll() throws SQLException, ParseException {
-        franchises.clear();
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM franchise " +
+        ResultSet set = connection.createStatement().executeQuery("SELECT * FROM franchise " +
                 "JOIN country ON country.country_id = franchise.country_id");
+        List<Franchise> franchises = new ArrayList<>();
         while (set.next())
             franchises.add(new Franchise(set.getInt("franchise_id"),
                     set.getString("franchise_name"),
@@ -53,10 +45,11 @@ public class FranchiseDao implements EntityDao<Franchise> {
     }
 
     public Franchise get(int id) throws SQLException, ParseException {
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM franchise " +
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM franchise " +
                 "JOIN country ON country.country_id = franchise.country_id " +
-                "WHERE franchise_id=" + id);
+                "WHERE franchise_id = ?");
+        statement.setInt(1, id);
+        ResultSet set = statement.executeQuery();
         set.next();
         return new Franchise(set.getInt("franchise_id"),
                 set.getString("franchise_name"),
@@ -65,60 +58,61 @@ public class FranchiseDao implements EntityDao<Franchise> {
     }
 
     public void add(Franchise franchise) throws SQLException {
-        try {
-            statement.executeUpdate("INSERT INTO country(country_name) values('" + franchise.getCountry() + "')");
-        } catch (Exception e) { }
-        statement.executeUpdate("INSERT INTO franchise(franchise_name, country_id, release) SELECT '" +
-                franchise.getFranchiseName() + "', country.country_id, " +
-                "to_date('" + franchise.dateToString() + "', 'yyyy-MM-dd')" +
-                " FROM country WHERE country_name='" + franchise.getCountry() + "'");
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO COUNTRY(country_name) SELECT ? " +
+                "WHERE NOT EXISTS (SELECT country_name FROM COUNTRY WHERE country_name = ?)");
+        statement.setString(1, franchise.getCountry());
+        statement.setString(2, franchise.getCountry());
+        statement.executeUpdate();
+
+        statement = connection.prepareStatement("INSERT INTO franchise(franchise_name, country_id, release) " +
+                "SELECT ?, country.country_id, to_date(?,'yyyy-MM-dd') FROM country WHERE country_name = ?");
+        statement.setString(1, franchise.getFranchiseName());
+        statement.setString(2, franchise.dateToString());
+        statement.setString(3, franchise.getCountry());
+        statement.executeUpdate();
     }
 
-
     public void addAll(List<Franchise> franchises) throws SQLException {
-        String sqlCountryRequest = "INSERT INTO country(country_name) values ";
-        for (int i = 0, size = franchises.size(); i < size; i++) {
-            Franchise franchise = franchises.get(i);
-            sqlCountryRequest += "('" + franchise.getCountry() + "')";
-            if (i != size - 1)
-                sqlCountryRequest += ",";
-        }
-        try {
-            statement.executeUpdate(sqlCountryRequest);
-        } catch (Exception e) { }
         for (Franchise franchise : franchises) {
-            statement.executeUpdate("INSERT INTO franchise(franchise_name, country_id, release) SELECT '" +
-                    franchise.getFranchiseName() + "', country.country_id, " +
-                    "to_date('" + franchise.dateToString() + "', 'yyyy-MM-dd')" +
-                    " FROM country WHERE country_name='" + franchise.getCountry() + "'");
+            add(franchise);
         }
     }
 
     public void remove(int id) throws SQLException {
-        statement.executeUpdate("DELETE FROM franchise WHERE franchise_id=" + id);
+        PreparedStatement statement = connection.prepareStatement("DELETE FROM franchise WHERE franchise_id = ?");
+        statement.setInt(1, id);
+        statement.executeUpdate();
     }
 
     public void update(Franchise franchise) throws SQLException {
-        try {
-            statement.executeUpdate("INSERT INTO country(country_name) values('" + franchise.getCountry() + "')");
-        } catch (Exception e) { }
-        ResultSet set = statement.executeQuery("SELECT country_id FROM country WHERE country_name='" + franchise.getCountry() + "'");
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO COUNTRY(country_name) SELECT ? " +
+                "WHERE NOT EXISTS (SELECT country_name FROM COUNTRY WHERE country_name = ?)");
+        statement.setString(1, franchise.getCountry());
+        statement.setString(2, franchise.getCountry());
+        statement.executeUpdate();
+
+        statement = connection.prepareStatement("SELECT country_id FROM country WHERE country_name = ?");
+        statement.setString(1, franchise.getCountry());
+        ResultSet set = statement.executeQuery();
         set.next();
         int countryId = set.getInt("country_id");
 
-        statement.executeUpdate("UPDATE franchise " +
-                "SET franchise_name='" + franchise.getFranchiseName() +
-                "', release=to_date('" + franchise.dateToString() + "', 'yyyy-MM-dd')" +
-                ", country_id=" + countryId +
-                " WHERE franchise_id=" + franchise.getId());
+        statement = connection.prepareStatement("UPDATE franchise SET franchise_name = ?, " +
+                "release = to_date(?, 'yyyy-MM-dd'), country_id = ? WHERE franchise_id = ?");
+        statement.setString(1, franchise.getFranchiseName());
+        statement.setString(2, franchise.dateToString());
+        statement.setInt(3, countryId);
+        statement.setInt(4, franchise.getId());
+        statement.executeUpdate();
     }
 
     public List<Franchise> getByName(String name) throws SQLException, ParseException {
-        franchises.clear();
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM franchise " +
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM franchise " +
                 "JOIN country ON country.country_id = franchise.country_id WHERE " +
-                regexpLike("franchise.franchise_name", name));
+                "UPPER(franchise.franchise_name) LIKE UPPER(?)");
+        statement.setString(1, "%" + name + "%");
+        ResultSet set = statement.executeQuery();
+        List<Franchise> franchises = new ArrayList<>();
         while (set.next())
             franchises.add(new Franchise(set.getInt("franchise_id"),
                     set.getString("franchise_name"),
@@ -129,22 +123,28 @@ public class FranchiseDao implements EntityDao<Franchise> {
 
     public List<Franchise> getByFilter(EntityFilter entityFilter) throws SQLException, ParseException {
         FranchiseFilter filter = (FranchiseFilter) entityFilter;
-        franchises.clear();
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM franchise " +
+        String endQuery = "";
+        Boolean isFilteringDate = !EntityUtils.formatTime(filter.getRelease()).equals("00:59:59");
+        if (isFilteringDate)
+            endQuery = "AND TO_CHAR(franchise.release,'yyyy-MM-dd') = ?";
+
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM franchise " +
                 "JOIN country ON country.country_id = franchise.country_id WHERE " +
-                (EntityUtils.formatTime(filter.getRelease()).equals("59:59") ? "" : "TO_CHAR(franchise.release,'yyyy-MM-dd') = '" + filter.dateToString() + "' AND ") +
-                regexpLike("franchise.franchise_name", filter.getName()) + " AND " +
-                regexpLike("country.country_name", filter.getCountry()));
+                "UPPER(franchise.franchise_name) LIKE UPPER(?) AND " +
+                "UPPER(country.country_name) LIKE UPPER(?) " + endQuery);
+        statement.setString(1, "%" + filter.getName() + "%");
+        statement.setString(2, "%" + filter.getCountry() + "%");
+        if (isFilteringDate) {
+            //noinspection JpaQueryApiInspection
+            statement.setString(3, filter.dateToString());
+        }
+        ResultSet set = statement.executeQuery();
+        List<Franchise> franchises = new ArrayList<>();
         while (set.next())
             franchises.add(new Franchise(set.getInt("franchise_id"),
                     set.getString("franchise_name"),
                     set.getString("country_name"),
                     EntityUtils.parseDate(set.getString("release"))));
         return franchises;
-    }
-
-    private String regexpLike(String attribute, String value) {
-        return "UPPER(" + attribute + ") LIKE UPPER('%" + value + "%')";
     }
 }

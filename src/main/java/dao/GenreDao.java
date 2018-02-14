@@ -1,15 +1,12 @@
 package dao;
 
 import entitiy.Genre;
-import util.dbdrivers.DbManager;
+import util.dbdriver.DbManager;
 import entitiy.filter.EntityFilter;
 import entitiy.filter.GenreFilter;
-import util.dbdrivers.PostgresManager;
+import util.dbdriver.PostgresManager;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +14,6 @@ import java.util.Properties;
 
 public class GenreDao implements EntityDao<Genre> {
     private Connection connection;
-    private Statement statement;
-    private List<Genre> genres;
 
     public GenreDao(Properties properties) throws SQLException {
         String username = properties.getProperty("username");
@@ -29,8 +24,6 @@ public class GenreDao implements EntityDao<Genre> {
 
         DbManager manager = new PostgresManager(username, password);
         connection = manager.connect(host, port, sid);
-        statement = connection.createStatement();
-        genres = new ArrayList<>();
     }
 
     public void closeConnection() throws SQLException {
@@ -39,9 +32,8 @@ public class GenreDao implements EntityDao<Genre> {
     }
 
     public List<Genre> getAll() throws SQLException {
-        genres.clear();
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM genre");
+        ResultSet set = connection.createStatement().executeQuery("SELECT * FROM genre");
+        List<Genre> genres = new ArrayList<>();
         while (set.next())
             genres.add(new Genre(set.getInt("genre_id"),
                     set.getString("genre_name"),
@@ -50,8 +42,9 @@ public class GenreDao implements EntityDao<Genre> {
     }
 
     public Genre get(int id) throws SQLException {
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM genre WHERE genre_id=" + id);
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM genre WHERE genre_id = ?");
+        statement.setInt(1, id);
+        ResultSet set = statement.executeQuery();
         set.next();
         return new Genre(set.getInt("genre_id"),
                 set.getString("genre_name"),
@@ -59,39 +52,41 @@ public class GenreDao implements EntityDao<Genre> {
     }
 
     public void add(Genre genre) throws SQLException {
-        statement.executeUpdate("INSERT INTO genre(genre_name, parent_id) values('"
-                + genre.getGenreName() + "',"
-                + (genre.getParentId() == 0 ? "null" : genre.getParentId()) + ")");
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO genre(genre_name, parent_id) values(?,?)");
+        statement.setString(1, genre.getGenreName());
+        if (genre.getParentId() == 0) statement.setNull(2, Types.INTEGER);
+        else statement.setInt(2, genre.getParentId());
+        statement.executeUpdate();
     }
 
     public void addAll(List<Genre> genres) throws SQLException {
-        String sqlRequest = "INSERT INTO genre(genre_name, parent_id) values ";
-        for (int i = 0, size = genres.size(); i < size; i++) {
-            Genre genre = genres.get(i);
-            sqlRequest += "('" + genre.getGenreName() + "',"
-                    + (genre.getParentId() == 0 ? "null" : genre.getParentId()) + ")";
-            if (i != size - 1)
-                sqlRequest += ",";
+        for (Genre genre : genres) {
+            add(genre);
         }
-        statement.executeUpdate(sqlRequest);
     }
 
     public void remove(int id) throws SQLException {
-        statement.executeUpdate("DELETE FROM genre WHERE genre_id=" + id);
+        PreparedStatement statement = connection.prepareStatement("DELETE FROM genre WHERE genre_id = ?");
+        statement.setInt(1, id);
+        statement.executeUpdate();
     }
 
     public void update(Genre genre) throws SQLException {
-        statement.executeUpdate("UPDATE genre " +
-                "SET genre_name='" + genre.getGenreName() +
-                "', parent_id=" + (genre.getParentId() == 0 ? "null" : genre.getParentId()) +
-                " WHERE genre_id=" + genre.getId());
+        PreparedStatement statement = connection.prepareStatement(
+                "UPDATE genre SET genre_name = ?, parent_id = ? WHERE genre_id = ?");
+        statement.setString(1, genre.getGenreName());
+        if (genre.getParentId() == 0) statement.setNull(2, Types.INTEGER);
+        else statement.setInt(2, genre.getParentId());
+        statement.setInt(3, genre.getId());
+        statement.executeUpdate();
     }
 
     public List<Genre> getByName(String name) throws SQLException, ParseException {
-        genres.clear();
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM genre WHERE " +
-                regexpLike("genre.genre_name", name));
+        PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM genre WHERE UPPER(genre.genre_name) LIKE UPPER(?)");
+        statement.setString(1, "%" + name + "%");
+        ResultSet set = statement.executeQuery();
+        List<Genre> genres = new ArrayList<>();
         while (set.next())
             genres.add(new Genre(set.getInt("genre_id"),
                     set.getString("genre_name"),
@@ -101,20 +96,17 @@ public class GenreDao implements EntityDao<Genre> {
 
     public List<Genre> getByFilter(EntityFilter entityFilter) throws SQLException, ParseException {
         GenreFilter filter = (GenreFilter) entityFilter;
-        genres.clear();
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM genre " +
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM genre " +
                 "LEFT OUTER JOIN genre parent ON parent.genre_id = genre.parent_id WHERE " +
-                regexpLike("genre.genre_name", filter.getName()) + " AND " +
-                regexpLike("parent.genre_name", filter.getParentName()));
+                "UPPER(genre.genre_name) LIKE UPPER(?) AND UPPER(parent.genre_name) LIKE UPPER(?)");
+        statement.setString(1, "%" + filter.getName() + "%");
+        statement.setString(2, "%" + filter.getParentName() + "%");
+        ResultSet set = statement.executeQuery();
+        List<Genre> genres = new ArrayList<>();
         while (set.next())
             genres.add(new Genre(set.getInt("genre_id"),
                     set.getString("genre_name"),
                     set.getInt("parent_id")));
         return genres;
-    }
-
-    private String regexpLike(String attribute, String value){
-        return "UPPER(" + attribute + ") LIKE UPPER('%" + value + "%')";
     }
 }

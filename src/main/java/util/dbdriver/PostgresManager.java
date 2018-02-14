@@ -1,18 +1,18 @@
-package util.dbdrivers;
+package util.dbdriver;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Locale;
 
-public class OracleManager implements DbManager {
+public class PostgresManager implements DbManager {
 
-    public static final String DB_DRIVER = "oracle.jdbc.driver.OracleDriver";
+    public static final String DB_DRIVER = "org.postgresql.Driver";
 
     private String password;
     private String username;
 
-    public OracleManager(String username, String password){
+    public PostgresManager(String username, String password){
         Locale.setDefault(Locale.ENGLISH);
         setUsername(username);
         setPassword(password);
@@ -50,7 +50,7 @@ public class OracleManager implements DbManager {
             e.printStackTrace();
         }
 
-        String url = "jdbc:oracle:thin:@" + hostname + ":" + port + ":" + sid;
+        String url = "jdbc:postgresql://" + hostname + ":" + port + "/" + sid;
         return DriverManager.getConnection(url, username, password);
     }
 }

@@ -1,16 +1,13 @@
 package dao;
 
 import entitiy.Producer;
-import util.dbdrivers.DbManager;
+import util.dbdriver.DbManager;
 import entitiy.filter.ProducerFilter;
 import entitiy.filter.EntityFilter;
 import util.EntityUtils;
-import util.dbdrivers.PostgresManager;
+import util.dbdriver.PostgresManager;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +15,6 @@ import java.util.Properties;
 
 public class ProducerDao implements EntityDao<Producer> {
     private Connection connection;
-    private Statement statement;
-    private List<Producer> producers;
 
     public ProducerDao(Properties properties) throws SQLException {
         String username = properties.getProperty("username");
@@ -30,8 +25,6 @@ public class ProducerDao implements EntityDao<Producer> {
 
         DbManager manager = new PostgresManager(username, password);
         connection = manager.connect(host, port, sid);
-        statement = connection.createStatement();
-        producers = new ArrayList<>();
     }
 
     public void closeConnection() throws SQLException {
@@ -40,10 +33,9 @@ public class ProducerDao implements EntityDao<Producer> {
     }
 
     public List<Producer> getAll() throws SQLException, ParseException {
-        producers.clear();
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM producer " +
+        ResultSet set = connection.createStatement().executeQuery("SELECT * FROM producer " +
                 "JOIN country citizenship ON citizenship.country_id = producer.citizenship_id");
+        List<Producer> producers = new ArrayList<>();
         while (set.next())
             producers.add(new Producer(set.getInt("producer_id"),
                     set.getString("producer_name"),
@@ -53,10 +45,11 @@ public class ProducerDao implements EntityDao<Producer> {
     }
 
     public Producer get(int id) throws SQLException, ParseException {
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM producer " +
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM producer " +
                 "JOIN country citizenship ON citizenship.country_id = producer.citizenship_id " +
-                "WHERE producer_id=" + id);
+                        "WHERE producer_id = ?");
+        statement.setInt(1, id);
+        ResultSet set = statement.executeQuery();
         set.next();
         return new Producer(set.getInt("producer_id"),
                 set.getString("producer_name"),
@@ -65,61 +58,61 @@ public class ProducerDao implements EntityDao<Producer> {
     }
 
     public void add(Producer producer) throws SQLException {
-        try {
-            statement.executeUpdate("INSERT INTO country(country_name) values('" + producer.getCitizenship() + "')");
-        }
-        catch (Exception e){ }
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO COUNTRY(country_name) SELECT ? " +
+                "WHERE NOT EXISTS (SELECT country_name FROM COUNTRY WHERE country_name = ?)");
+        statement.setString(1, producer.getCitizenship());
+        statement.setString(2, producer.getCitizenship());
+        statement.executeUpdate();
 
-        statement.executeUpdate("INSERT INTO producer(producer_name, citizenship_id, birthdate) SELECT '" +
-                producer.getProducerName() + "', country.country_id, " +
-                "to_date('" + producer.dateToString() + "', 'yyyy-MM-dd')" +
-                " FROM country WHERE country_name='" + producer.getCitizenship() + "'");
+        statement = connection.prepareStatement("INSERT INTO producer(producer_name, citizenship_id, birthdate) " +
+                "SELECT ?, country.country_id, to_date(?,'yyyy-MM-dd') FROM country WHERE country_name = ?");
+        statement.setString(1, producer.getProducerName());
+        statement.setString(2, producer.dateToString());
+        statement.setString(3, producer.getCitizenship());
+        statement.executeUpdate();
     }
 
     public void addAll(List<Producer> producers) throws SQLException {
-        String sqlCountryRequest = "INSERT INTO country(country_name) values ";
-        for (int i = 0, size = producers.size(); i < size; i++) {
-            Producer producer = producers.get(i);
-            sqlCountryRequest += "('" + producer.getCitizenship() + "')";
-            if (i != size - 1)
-                sqlCountryRequest += ",";
-        }
-        try {
-            statement.executeUpdate(sqlCountryRequest);
-        } catch (Exception e) { }
         for (Producer producer : producers) {
-            statement.executeUpdate("INSERT INTO producer(producer_name, citizenship_id, birthdate) SELECT '" +
-                    producer.getProducerName() + "', country.country_id, " +
-                    "to_date('" + producer.dateToString() + "', 'yyyy-MM-dd'))" +
-                    " FROM country WHERE country_name='" + producer.getCitizenship() + "'");
+            add(producer);
         }
     }
 
     public void remove(int id) throws SQLException {
-        statement.executeUpdate("DELETE FROM producer WHERE producer_id=" + id);
+        PreparedStatement statement = connection.prepareStatement("DELETE FROM producer WHERE producer_id = ?");
+        statement.setInt(1, id);
+        statement.executeUpdate();
     }
 
     public void update(Producer producer) throws SQLException {
-        try {
-            statement.executeUpdate("INSERT INTO country(country_name) values('" + producer.getCitizenship() + "')");
-        } catch (Exception e) { }
-        ResultSet set = statement.executeQuery("SELECT country_id FROM country WHERE country_name='" + producer.getCitizenship() + "'");
+        PreparedStatement statement = connection.prepareStatement("INSERT INTO COUNTRY(country_name) SELECT ? " +
+                "WHERE NOT EXISTS (SELECT country_name FROM COUNTRY WHERE country_name = ?)");
+        statement.setString(1, producer.getCitizenship());
+        statement.setString(2, producer.getCitizenship());
+        statement.executeUpdate();
+
+        statement = connection.prepareStatement("SELECT country_id FROM country WHERE country_name = ?");
+        statement.setString(1, producer.getCitizenship());
+        ResultSet set = statement.executeQuery();
         set.next();
         int countryId = set.getInt("country_id");
 
-        statement.executeUpdate("UPDATE producer " +
-                "SET producer_name='" + producer.getProducerName() +
-                "', birthdate=to_date('" + producer.dateToString() + "', 'yyyy-MM-dd')" +
-                ", citizenship_id=" + countryId +
-                " WHERE producer_id=" + producer.getId());
+        statement = connection.prepareStatement("UPDATE producer SET producer_name = ?, " +
+                "birthdate = to_date(?, 'yyyy-MM-dd'), citizenship_id = ? WHERE producer_id = ?");
+        statement.setString(1, producer.getProducerName());
+        statement.setString(2, producer.dateToString());
+        statement.setInt(3, countryId);
+        statement.setInt(4, producer.getId());
+        statement.executeUpdate();
     }
 
     public List<Producer> getByName(String name) throws SQLException, ParseException {
-        producers.clear();
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM producer " +
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM producer " +
                 "JOIN country citizenship ON citizenship.country_id = producer.citizenship_id WHERE " +
-                regexpLike("producer.producer_name", name));
+                "UPPER(producer.producer_name) LIKE UPPER(?)");
+        statement.setString(1, "%" + name + "%");
+        ResultSet set = statement.executeQuery();
+        List<Producer> producers = new ArrayList<>();
         while (set.next())
             producers.add(new Producer(set.getInt("producer_id"),
                     set.getString("producer_name"),
@@ -130,22 +123,28 @@ public class ProducerDao implements EntityDao<Producer> {
 
     public List<Producer> getByFilter(EntityFilter entityFilter) throws SQLException, ParseException {
         ProducerFilter filter = (ProducerFilter) entityFilter;
-        producers.clear();
-        ResultSet set;
-        set = statement.executeQuery("SELECT * FROM producer " +
+        String endQuery = "";
+        Boolean isFilteringDate = !EntityUtils.formatTime(filter.getBirthdate()).equals("00:59:59");
+        if (isFilteringDate)
+            endQuery = "AND TO_CHAR(producer.birthdate,'yyyy-MM-dd') = ?";
+
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM producer " +
                 "JOIN country citizenship ON citizenship.country_id = producer.citizenship_id WHERE " +
-                (EntityUtils.formatTime(filter.getBirthdate()).equals("59:59") ? "" : "TO_CHAR(producer.birthdate,'yyyy-MM-dd') = '" + filter.dateToString() + "' AND ") +
-                regexpLike("producer.producer_name", filter.getName()) + " AND " +
-                regexpLike("citizenship.country_name", filter.getCitizenship()));
+                "UPPER(producer.producer_name) LIKE UPPER(?) AND " +
+                "UPPER(citizenship.country_name) LIKE UPPER(?) " + endQuery);
+        statement.setString(1, "%" + filter.getName() + "%");
+        statement.setString(2, "%" + filter.getCitizenship() + "%");
+        if (isFilteringDate) {
+            //noinspection JpaQueryApiInspection
+            statement.setString(3, filter.dateToString());
+        }
+        ResultSet set = statement.executeQuery();
+        List<Producer> producers = new ArrayList<>();
         while (set.next())
             producers.add(new Producer(set.getInt("producer_id"),
                     set.getString("producer_name"),
                     set.getString("country_name"),
                     EntityUtils.parseDate(set.getString("birthdate"))));
         return producers;
-    }
-
-    private String regexpLike(String attribute, String value){
-        return "UPPER(" + attribute + ") LIKE UPPER('%" + value + "%')";
     }
 }

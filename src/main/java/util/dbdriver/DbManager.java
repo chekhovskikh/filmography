@@ -1,4 +1,4 @@
-package util.dbdrivers;
+package util.dbdriver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
