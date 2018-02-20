@@ -8,7 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class EntityUtils {
+public class EntityUtil {
     public static final String PATH_XML_FILES = "/";
     public static final SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
     public static final SimpleDateFormat defaultFormatDate = new SimpleDateFormat("dd.MM.yyyy");
@@ -16,7 +16,7 @@ public class EntityUtils {
     public static final SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm:ss");
     //public static final Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat("yyyy-dd-MM hh:mm:ss").create();
 
-    private EntityUtils() {
+    private EntityUtil() {
     }
 
     public static Date defaultParseDate(String source) throws ParseException {

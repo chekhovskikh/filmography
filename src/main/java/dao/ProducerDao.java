@@ -1,10 +1,10 @@
 package dao;
 
 import entitiy.Producer;
+import util.EntityUtil;
 import util.dbdriver.DbManager;
 import entitiy.filter.ProducerFilter;
 import entitiy.filter.EntityFilter;
-import util.EntityUtils;
 import util.dbdriver.PostgresManager;
 
 import java.sql.*;
@@ -40,7 +40,7 @@ public class ProducerDao implements EntityDao<Producer> {
             producers.add(new Producer(set.getInt("producer_id"),
                     set.getString("producer_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseDate(set.getString("birthdate"))));
+                    EntityUtil.parseDate(set.getString("birthdate"))));
         return producers;
     }
 
@@ -54,7 +54,7 @@ public class ProducerDao implements EntityDao<Producer> {
         return new Producer(set.getInt("producer_id"),
                 set.getString("producer_name"),
                 set.getString("country_name"),
-                EntityUtils.parseDate(set.getString("birthdate")));
+                EntityUtil.parseDate(set.getString("birthdate")));
     }
 
     public void add(Producer producer) throws SQLException {
@@ -117,14 +117,14 @@ public class ProducerDao implements EntityDao<Producer> {
             producers.add(new Producer(set.getInt("producer_id"),
                     set.getString("producer_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseDate(set.getString("birthdate"))));
+                    EntityUtil.parseDate(set.getString("birthdate"))));
         return producers;
     }
 
     public List<Producer> getByFilter(EntityFilter entityFilter) throws SQLException, ParseException {
         ProducerFilter filter = (ProducerFilter) entityFilter;
         String endQuery = "";
-        Boolean isFilteringDate = !EntityUtils.formatTime(filter.getBirthdate()).equals("00:59:59");
+        Boolean isFilteringDate = !EntityUtil.formatTime(filter.getBirthdate()).equals("00:59:59");
         if (isFilteringDate)
             endQuery = "AND TO_CHAR(producer.birthdate,'yyyy-MM-dd') = ?";
 
@@ -144,7 +144,7 @@ public class ProducerDao implements EntityDao<Producer> {
             producers.add(new Producer(set.getInt("producer_id"),
                     set.getString("producer_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseDate(set.getString("birthdate"))));
+                    EntityUtil.parseDate(set.getString("birthdate"))));
         return producers;
     }
 }

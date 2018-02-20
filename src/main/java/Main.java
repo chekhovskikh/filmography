@@ -41,25 +41,25 @@ public class Main {
         genreDAO.update(genre2);
         System.out.println(genre1);
         System.out.println(genre2);*/
-        /*Producer band1 = new Producer(1,"Ivan", EntityUtils.parseDate("2001-01-01"));
-        Producer band2 = new Producer(2,"Vlad", EntityUtils.parseDate("2002-02-02"));
+        /*Producer band1 = new Producer(1,"Ivan", EntityUtil.parseDate("2001-01-01"));
+        Producer band2 = new Producer(2,"Vlad", EntityUtil.parseDate("2002-02-02"));
         List<Producer> list = new ArrayList<>();
         list.add(band1);
         list.add(band2);
-        String s = EntityUtils.serializeList(list);
+        String s = EntityUtil.serializeList(list);
 
         System.out.print(s);
-        List<Producer> list2 = EntityUtils.deserializeList(s, Producer.class);
+        List<Producer> list2 = EntityUtil.deserializeList(s, Producer.class);
         Producer band3 = list2.get(0);
         System.out.println(band3);
         System.out.println("-----------------");
         Type type = new TypeToken<List<Entity>>(){}.getType();
 
         Genre genre = new Genre(1,"Rock", 0);
-        EntityUtils.serializeToXML(genre);
+        EntityUtil.serializeToXML(genre);
 
         System.out.println("-----------------");
-        EntityUtils.deSerializeFromXML(genre);
+        EntityUtil.deSerializeFromXML(genre);
         */
 
         /*
@@ -73,7 +73,7 @@ public class Main {
         //ms.searchProducers("Ivan");
         //String first = ms.getAllBands();
         //String first = ms.getBand(2);
-        //EntityUtils.deserializeList(first,Producer.class);
+        //EntityUtil.deserializeList(first,Producer.class);
         //System.out.println(first);
         /*for (Entity elem : first) {
             Producer printElem = (Producer)elem;

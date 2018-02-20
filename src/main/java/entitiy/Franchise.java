@@ -1,6 +1,6 @@
 package entitiy;
 
-import util.EntityUtils;
+import util.EntityUtil;
 
 import java.util.Date;
 
@@ -63,10 +63,10 @@ public class Franchise implements Entity {
     }
 
     public String dateToString(){
-        return EntityUtils.formatDate(release);
+        return EntityUtil.formatDate(release);
     }
 
     public String defaultDateToString() {
-        return EntityUtils.defaultFormatDate(release);
+        return EntityUtil.defaultFormatDate(release);
     }
 }

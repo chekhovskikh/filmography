@@ -2,7 +2,7 @@ package servlet;
 
 import entitiy.Genre;
 import entitiy.filter.GenreFilter;
-import servlet.util.WebUtils;
+import servlet.util.WebUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -21,12 +21,12 @@ public class GenreServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        if (WebUtils.isAjax(request)) {
+        if (WebUtil.isAjax(request)) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
-                WebUtils.sendData(response, model.getGenre(id));
+                WebUtil.sendData(response, model.getGenre(id));
             } catch (Exception e) {
-                WebUtils.sendBadRequest(response, e.getCause().getMessage());
+                WebUtil.sendBadRequest(response, e.getCause().getMessage());
             }
             return;
         }
@@ -53,27 +53,27 @@ public class GenreServlet extends BaseServlet {
     }
 
     protected void doAdd(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException, ParseException {
-        Genre genre = WebUtils.getData(request, Genre.class);
+        Genre genre = WebUtil.getData(request, Genre.class);
         controller.addGenre(genre);
     }
 
     protected void doRemove(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
-        int id = WebUtils.getData(request, Integer.class);
+        int id = WebUtil.getData(request, Integer.class);
         controller.removeGenre(id);
     }
 
     protected void doUpdate(HttpServletRequest request, HttpServletResponse response) throws IOException, ParseException, SQLException {
-        Genre genre = WebUtils.getData(request, Genre.class);
+        Genre genre = WebUtil.getData(request, Genre.class);
         controller.updateGenre(genre);
     }
 
     protected void doSearch(HttpServletRequest request, HttpServletResponse response) throws IOException, ParseException, SQLException {
-        String name = WebUtils.getData(request, String.class);
-        WebUtils.sendData(response, model.getGenreByName(name));
+        String name = WebUtil.getData(request, String.class);
+        WebUtil.sendData(response, model.getGenreByName(name));
     }
 
     protected void doExtendedSearch(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException, ParseException {
-        GenreFilter genreFilter = WebUtils.getData(request, GenreFilter.class);
-        WebUtils.sendData(response, model.getGenreByFilter(genreFilter));
+        GenreFilter genreFilter = WebUtil.getData(request, GenreFilter.class);
+        WebUtil.sendData(response, model.getGenreByFilter(genreFilter));
     }
 }

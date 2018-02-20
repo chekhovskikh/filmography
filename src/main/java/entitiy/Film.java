@@ -1,7 +1,7 @@
 package entitiy;
 
 
-import util.EntityUtils;
+import util.EntityUtil;
 
 import java.util.Date;
 
@@ -86,6 +86,6 @@ public class Film implements Entity {
     }
 
     public String timeToString(){
-        return EntityUtils.formatTime(duration);
+        return EntityUtil.formatTime(duration);
     }
 }

@@ -1,6 +1,6 @@
 package entitiy.filter;
 
-import util.EntityUtils;
+import util.EntityUtil;
 
 import java.util.Date;
 
@@ -44,6 +44,6 @@ public class ProducerFilter implements EntityFilter {
     }
 
     public String dateToString(){
-        return EntityUtils.formatDate(birthdate);
+        return EntityUtil.formatDate(birthdate);
     }
 }

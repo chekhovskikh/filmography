@@ -2,7 +2,7 @@ package servlet;
 
 import entitiy.Film;
 import entitiy.filter.FilmFilter;
-import servlet.util.WebUtils;
+import servlet.util.WebUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -21,12 +21,12 @@ public class FilmServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        if (WebUtils.isAjax(request)) {
+        if (WebUtil.isAjax(request)) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
-                WebUtils.sendData(response, model.getFilm(id));
+                WebUtil.sendData(response, model.getFilm(id));
             } catch (Exception e) {
-                WebUtils.sendBadRequest(response, e.getCause().getMessage());
+                WebUtil.sendBadRequest(response, e.getCause().getMessage());
             }
             return;
         }
@@ -61,28 +61,28 @@ public class FilmServlet extends BaseServlet {
     }
 
     protected void doAdd(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException, ParseException {
-        Film film = WebUtils.getData(request, Film.class);
+        Film film = WebUtil.getData(request, Film.class);
         controller.addFilm(film);
     }
 
     protected void doRemove(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
-        int id = WebUtils.getData(request, Integer.class);
+        int id = WebUtil.getData(request, Integer.class);
         controller.removeFilm(id);
     }
 
     protected void doUpdate(HttpServletRequest request, HttpServletResponse response) throws IOException, ParseException, SQLException {
-        Film film = WebUtils.getData(request, Film.class);
+        Film film = WebUtil.getData(request, Film.class);
         controller.updateFilm(film);
     }
 
     protected void doSearch(HttpServletRequest request, HttpServletResponse response) throws IOException, ParseException, SQLException {
-        String name = WebUtils.getData(request, String.class);
-        WebUtils.sendData(response, model.getFilmByName(name));
+        String name = WebUtil.getData(request, String.class);
+        WebUtil.sendData(response, model.getFilmByName(name));
     }
 
     protected void doExtendedSearch(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException, ParseException {
-        FilmFilter filmFilter = WebUtils.getData(request, FilmFilter.class);
-        WebUtils.sendData(response, model.getFilmByFilter(filmFilter));
+        FilmFilter filmFilter = WebUtil.getData(request, FilmFilter.class);
+        WebUtil.sendData(response, model.getFilmByFilter(filmFilter));
     }
 }
 

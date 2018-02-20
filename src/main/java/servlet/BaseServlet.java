@@ -3,7 +3,7 @@ package servlet;
 import mvc.Controller;
 import mvc.Model;
 import servlet.util.DataLayer;
-import servlet.util.WebUtils;
+import servlet.util.WebUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -27,7 +27,7 @@ public abstract class BaseServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        if (!WebUtils.isAjax(request))
+        if (!WebUtil.isAjax(request))
             return;
 
         String action = request.getParameter("action");
@@ -50,7 +50,9 @@ public abstract class BaseServlet extends HttpServlet {
                     break;
             }
         } catch (Exception e) {
-            WebUtils.sendBadRequest(response, e.getCause().getMessage());
+            if (e.getCause() == null)
+                WebUtil.sendBadRequest(response, e.getMessage());
+            else WebUtil.sendBadRequest(response, e.getCause().getMessage());
         }
     }
 

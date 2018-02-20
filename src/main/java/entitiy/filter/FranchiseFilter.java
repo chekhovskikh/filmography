@@ -1,6 +1,6 @@
 package entitiy.filter;
 
-import util.EntityUtils;
+import util.EntityUtil;
 
 import java.util.Date;
 
@@ -43,6 +43,6 @@ public class FranchiseFilter implements EntityFilter {
     }
 
     public String dateToString(){
-        return EntityUtils.formatDate(release);
+        return EntityUtil.formatDate(release);
     }
 }

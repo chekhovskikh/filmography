@@ -1,10 +1,10 @@
 package dao;
 
 import entitiy.Film;
+import util.EntityUtil;
 import util.dbdriver.DbManager;
 import entitiy.filter.EntityFilter;
 import entitiy.filter.FilmFilter;
-import util.EntityUtils;
 import util.dbdriver.PostgresManager;
 
 import java.sql.*;
@@ -38,7 +38,7 @@ public class FilmDao implements EntityDao<Film> {
         while (set.next())
             films.add(new Film(set.getInt("film_id"),
                     set.getString("film_name"),
-                    EntityUtils.parseTime(set.getString("duration")),
+                    EntityUtil.parseTime(set.getString("duration")),
                     set.getInt("producer_id"),
                     set.getInt("franchise_id"),
                     set.getInt("genre_id")));
@@ -52,7 +52,7 @@ public class FilmDao implements EntityDao<Film> {
         set.next();
         return new Film(set.getInt("film_id"),
                 set.getString("film_name"),
-                EntityUtils.parseTime(set.getString("duration")),
+                EntityUtil.parseTime(set.getString("duration")),
                 set.getInt("producer_id"),
                 set.getInt("franchise_id"),
                 set.getInt("genre_id"));
@@ -107,7 +107,7 @@ public class FilmDao implements EntityDao<Film> {
         while (set.next())
             films.add(new Film(set.getInt("film_id"),
                     set.getString("film_name"),
-                    EntityUtils.parseTime(set.getString("duration")),
+                    EntityUtil.parseTime(set.getString("duration")),
                     set.getInt("producer_id"),
                     set.getInt("franchise_id"),
                     set.getInt("genre_id")));
@@ -140,7 +140,7 @@ public class FilmDao implements EntityDao<Film> {
         while (set.next())
             films.add(new Film(set.getInt("film_id"),
                     set.getString("film_name"),
-                    EntityUtils.parseTime(set.getString("duration")),
+                    EntityUtil.parseTime(set.getString("duration")),
                     set.getInt("producer_id"),
                     set.getInt("franchise_id"),
                     set.getInt("genre_id")));

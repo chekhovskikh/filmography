@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class WebUtils {
+public class WebUtil {
 
     public static boolean isAjax(HttpServletRequest request) {
         return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
@@ -25,6 +25,6 @@ public class WebUtils {
 
     public static void sendBadRequest(HttpServletResponse response, String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.getWriter().write(message);
+        sendData(response, message);
     }
 }

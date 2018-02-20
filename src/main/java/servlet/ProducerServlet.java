@@ -2,7 +2,7 @@ package servlet;
 
 import entitiy.Producer;
 import entitiy.filter.ProducerFilter;
-import servlet.util.WebUtils;
+import servlet.util.WebUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -21,12 +21,12 @@ public class ProducerServlet extends BaseServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        if (WebUtils.isAjax(request)) {
+        if (WebUtil.isAjax(request)) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
-                WebUtils.sendData(response, model.getProducer(id));
+                WebUtil.sendData(response, model.getProducer(id));
             } catch (Exception e) {
-                WebUtils.sendBadRequest(response, e.getCause().getMessage());
+                WebUtil.sendBadRequest(response, e.getCause().getMessage());
             }
             return;
         }
@@ -48,27 +48,27 @@ public class ProducerServlet extends BaseServlet {
     }
 
     protected void doAdd(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException, ParseException {
-        Producer producer = WebUtils.getData(request, Producer.class);
+        Producer producer = WebUtil.getData(request, Producer.class);
         controller.addProducer(producer);
     }
 
     protected void doRemove(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException {
-        int id = WebUtils.getData(request, Integer.class);
+        int id = WebUtil.getData(request, Integer.class);
         controller.removeProducer(id);
     }
 
     protected void doUpdate(HttpServletRequest request, HttpServletResponse response) throws IOException, ParseException, SQLException {
-        Producer producer = WebUtils.getData(request, Producer.class);
+        Producer producer = WebUtil.getData(request, Producer.class);
         controller.updateProducer(producer);
     }
 
     protected void doSearch(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException, ParseException {
-        String name = WebUtils.getData(request, String.class);
-        WebUtils.sendData(response, model.getProducerByName(name));
+        String name = WebUtil.getData(request, String.class);
+        WebUtil.sendData(response, model.getProducerByName(name));
     }
 
     protected void doExtendedSearch(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException, ParseException {
-        ProducerFilter producerFilter = WebUtils.getData(request, ProducerFilter.class);
-        WebUtils.sendData(response, model.getProducerByFilter(producerFilter));
+        ProducerFilter producerFilter = WebUtil.getData(request, ProducerFilter.class);
+        WebUtil.sendData(response, model.getProducerByFilter(producerFilter));
     }
 }

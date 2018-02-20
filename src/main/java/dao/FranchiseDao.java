@@ -1,10 +1,10 @@
 package dao;
 
 import entitiy.Franchise;
+import util.EntityUtil;
 import util.dbdriver.DbManager;
 import entitiy.filter.FranchiseFilter;
 import entitiy.filter.EntityFilter;
-import util.EntityUtils;
 import util.dbdriver.PostgresManager;
 
 import java.sql.*;
@@ -40,7 +40,7 @@ public class FranchiseDao implements EntityDao<Franchise> {
             franchises.add(new Franchise(set.getInt("franchise_id"),
                     set.getString("franchise_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseDate(set.getString("release"))));
+                    EntityUtil.parseDate(set.getString("release"))));
         return franchises;
     }
 
@@ -54,7 +54,7 @@ public class FranchiseDao implements EntityDao<Franchise> {
         return new Franchise(set.getInt("franchise_id"),
                 set.getString("franchise_name"),
                 set.getString("country_name"),
-                EntityUtils.parseDate(set.getString("release")));
+                EntityUtil.parseDate(set.getString("release")));
     }
 
     public void add(Franchise franchise) throws SQLException {
@@ -117,14 +117,14 @@ public class FranchiseDao implements EntityDao<Franchise> {
             franchises.add(new Franchise(set.getInt("franchise_id"),
                     set.getString("franchise_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseDate(set.getString("release"))));
+                    EntityUtil.parseDate(set.getString("release"))));
         return franchises;
     }
 
     public List<Franchise> getByFilter(EntityFilter entityFilter) throws SQLException, ParseException {
         FranchiseFilter filter = (FranchiseFilter) entityFilter;
         String endQuery = "";
-        Boolean isFilteringDate = !EntityUtils.formatTime(filter.getRelease()).equals("00:59:59");
+        Boolean isFilteringDate = !EntityUtil.formatTime(filter.getRelease()).equals("00:59:59");
         if (isFilteringDate)
             endQuery = "AND TO_CHAR(franchise.release,'yyyy-MM-dd') = ?";
 
@@ -144,7 +144,7 @@ public class FranchiseDao implements EntityDao<Franchise> {
             franchises.add(new Franchise(set.getInt("franchise_id"),
                     set.getString("franchise_name"),
                     set.getString("country_name"),
-                    EntityUtils.parseDate(set.getString("release"))));
+                    EntityUtil.parseDate(set.getString("release"))));
         return franchises;
     }
 }
