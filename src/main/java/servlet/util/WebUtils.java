@@ -25,6 +25,6 @@ public class WebUtils {
 
     public static void sendBadRequest(HttpServletResponse response, String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        sendData(response, message);
+        response.getWriter().write(message);
     }
 }
